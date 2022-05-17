@@ -1,0 +1,10 @@
+{
+    "name": "near-aura-nft",
+    "version": "1.0.0",
+    "description": "Near contract for Aura",
+    "author": "vecno.io",
+    "license": "MIT",
+    "scripts": {
+        "build": "cd nft-contract && bash build.sh && cd ../.."
+    }
+}
