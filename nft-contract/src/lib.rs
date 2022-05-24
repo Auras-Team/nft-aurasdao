@@ -1,5 +1,5 @@
 use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
-use near_sdk::collections::{LazyOption, LookupMap, LookupSet, UnorderedMap, UnorderedSet};
+use near_sdk::collections::{LazyOption, LookupMap, UnorderedMap, UnorderedSet};
 use near_sdk::json_types::U128;
 use near_sdk::serde::{Deserialize, Serialize};
 use near_sdk::{
@@ -72,25 +72,37 @@ pub enum StorageKey {
 impl Contract {
     /*
         initialization function (this can only be called once).
+        this initializes the contract with defaults and owner_id.
+    */
+    #[init]
+    pub fn nft_init_default(owner_id: AccountId) -> Self {
+        Self::nft_init(
+            owner_id,
+            ContractMetadata {
+                spec: "nft-2.0.0".to_string(),
+                name: "Auras".to_string(),
+                symbol: "AURA".to_string(),
+                icon: None,
+                base_uri: None,
+                reference: None,
+                reference_hash: None,
+            },
+        )
+    }
+
+    /*
+        initialization function (this can only be called once).
         this initializes the contract with metadata and owner_id.
     */
     #[init]
-    pub fn nft_init(owner_id: AccountId) -> Self {
+    pub fn nft_init(owner_id: AccountId, metadata: ContractMetadata) -> Self {
         // Initialize data and return it
         Self {
             //Set the contract data fields equal to the passed in owner_id.
             owner_id,
             metadata: LazyOption::new(
                 StorageKey::ContractMetadata.try_to_vec().unwrap(),
-                Some(&ContractMetadata {
-                    spec: "nft-2.0.0".to_string(),
-                    name: "Auras".to_string(),
-                    symbol: "AURA".to_string(),
-                    icon: None,
-                    base_uri: None,
-                    reference: None,
-                    reference_hash: None,
-                }),
+                Some(&metadata),
             ),
             //Storage keys are simply the prefixes used for storage to avoid data collision.
             allowed_list_mint: LookupMap::new(

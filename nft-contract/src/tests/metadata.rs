@@ -6,7 +6,36 @@ use crate::metadata::NftMetadata;
 fn test_nft_metadata_contract() {
     let acc_x = AccountId::new_unchecked(String::from("account.x"));
 
-    let contract = Contract::nft_init(acc_x.clone());
+    let metadata = ContractMetadata {
+        spec: "nft-1.0.0".to_string(),
+        name: "AA".to_string(),
+        symbol: "BB".to_string(),
+        icon: Some("CC".to_string()),
+        base_uri: Some("DD".to_string()),
+        reference: Some("EE".to_string()),
+        reference_hash: Some("FF".to_string()),
+    };
+
+    let contract = Contract::nft_init(acc_x.clone(), metadata.clone());
+    let data = contract.nft_metadata();
+
+    // Note: this values are hard coded in to Contract::new
+
+    assert!(data.spec == metadata.spec);
+    assert!(data.name == metadata.name);
+    assert!(data.symbol == metadata.symbol);
+
+    assert!(data.icon.expect("must be set") == metadata.icon.unwrap());
+    assert!(data.base_uri.expect("must be set") == metadata.base_uri.unwrap());
+    assert!(data.reference.expect("must be set") == metadata.reference.unwrap());
+    assert!(data.reference_hash.expect("must be set") == metadata.reference_hash.unwrap());
+}
+
+#[test]
+fn test_nft_metadata_contract_default() {
+    let acc_x = AccountId::new_unchecked(String::from("account.x"));
+
+    let contract = Contract::nft_init_default(acc_x.clone());
     let data = contract.nft_metadata();
 
     // Note: this values are hard coded in to Contract::new
@@ -28,7 +57,7 @@ fn test_nft_metadata_token() {
     let acc_a = AccountId::new_unchecked(String::from("account.a"));
     let acc_x = AccountId::new_unchecked(String::from("account.x"));
 
-    let mut contract = Contract::nft_init(acc_x.clone());
+    let mut contract = Contract::nft_init_default(acc_x.clone());
 
     testing_env!(VMContextBuilder::new()
         .predecessor_account_id(acc_x.clone())
