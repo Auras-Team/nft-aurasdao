@@ -14,7 +14,7 @@ fn test_nft_mint() {
         .attached_deposit(1)
         .is_view(false)
         .build());
-    contract.nft_allow_minting(acc_x.clone());
+    contract.nft_allow_minting(acc_x.clone(), 1);
 
     let mut royalties = HashMap::new();
     royalties.insert(AccountId::new_unchecked(String::from("royalty.a")), 1250);
@@ -62,7 +62,7 @@ fn test_nft_mint_panic_cost() {
         .attached_deposit(1)
         .is_view(false)
         .build());
-    contract.nft_allow_minting(acc_x.clone());
+    contract.nft_allow_minting(acc_x.clone(), 1);
 
     let mut royalties = HashMap::new();
     royalties.insert(AccountId::new_unchecked(String::from("royalty.a")), 100);
@@ -110,7 +110,7 @@ fn test_nft_mint_panic_token_id() {
         .attached_deposit(1)
         .is_view(false)
         .build());
-    contract.nft_allow_minting(acc_x.clone());
+    contract.nft_allow_minting(acc_x.clone(), 2);
 
     let mut royalties = HashMap::new();
     royalties.insert(AccountId::new_unchecked(String::from("royalty.a")), 100);
@@ -166,7 +166,7 @@ fn test_nft_mint_panic_token_id() {
 }
 
 #[test]
-#[should_panic(expected = "Account doesn't have permission to call mint function")]
+#[should_panic(expected = "Account is not authorized to mint")]
 fn test_nft_mint_panic_access() {
     let tkn_a = String::from("token.a");
 
@@ -180,7 +180,7 @@ fn test_nft_mint_panic_access() {
         .attached_deposit(1)
         .is_view(false)
         .build());
-    contract.nft_allow_minting(acc_x.clone());
+    contract.nft_allow_minting(acc_x.clone(), 1);
 
     let metadata = TokenMetadata {
         title: Some(tkn_a.clone()),
@@ -206,6 +206,48 @@ fn test_nft_mint_panic_access() {
 }
 
 #[test]
+#[should_panic(expected = "Account has no mints remaining")]
+fn test_nft_mint_panic_amount() {
+    let tkn_a = String::from("token.a");
+    let tkn_b = String::from("token.b");
+
+    let acc_a = AccountId::new_unchecked(String::from("account.a"));
+    let acc_x = AccountId::new_unchecked(String::from("account.x"));
+
+    let mut contract = Contract::nft_init(acc_x.clone());
+
+    testing_env!(VMContextBuilder::new()
+        .predecessor_account_id(acc_x.clone())
+        .attached_deposit(1)
+        .is_view(false)
+        .build());
+    contract.nft_allow_minting(acc_a.clone(), 1);
+
+    let metadata = TokenMetadata {
+        title: Some(tkn_a.clone()),
+        description: Some("aa".to_string()),
+        media: Some("bb".to_string()),
+        media_hash: Some("cc".to_string()),
+        copies: Some(0),
+        issued_at: Some(1),
+        expires_at: Some(2),
+        starts_at: Some(3),
+        updated_at: Some(4),
+        extra: Some("dd".to_string()),
+        reference: Some("ee".to_string()),
+        reference_hash: Some("ff".to_string()),
+    };
+
+    testing_env!(VMContextBuilder::new()
+        .predecessor_account_id(acc_a.clone())
+        .attached_deposit(7000000000000000000000)
+        .is_view(false)
+        .build());
+    contract.nft_mint(tkn_a.clone(), metadata.clone(), acc_a.clone(), None);
+    contract.nft_mint(tkn_b.clone(), metadata.clone(), acc_a.clone(), None);
+}
+
+#[test]
 #[should_panic(expected = "Cannot add more than 6 perpetual royalty amounts")]
 fn test_nft_mint_panic_royalty_count() {
     let tkn_a = String::from("token.a");
@@ -220,7 +262,7 @@ fn test_nft_mint_panic_royalty_count() {
         .attached_deposit(1)
         .is_view(false)
         .build());
-    contract.nft_allow_minting(acc_x.clone());
+    contract.nft_allow_minting(acc_x.clone(), 1);
 
     let mut royalties = HashMap::new();
     royalties.insert(AccountId::new_unchecked(String::from("royalty.a")), 100);
@@ -269,7 +311,7 @@ fn test_nft_mint_panic_royalty_amount() {
         .attached_deposit(1)
         .is_view(false)
         .build());
-    contract.nft_allow_minting(acc_x.clone());
+    contract.nft_allow_minting(acc_x.clone(), 1);
 
     let mut royalties = HashMap::new();
     royalties.insert(AccountId::new_unchecked(String::from("royalty.a")), 2500);
@@ -300,3 +342,5 @@ fn test_nft_mint_panic_royalty_amount() {
         .build());
     contract.nft_mint(tkn_a.clone(), metadata, acc_a.clone(), Some(royalties));
 }
+
+// TODO Check limit error

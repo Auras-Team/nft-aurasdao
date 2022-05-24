@@ -24,7 +24,7 @@ fn test_nft_royalty() {
         .attached_deposit(1)
         .is_view(false)
         .build());
-    contract.nft_allow_minting(acc_x.clone());
+    contract.nft_allow_minting(acc_x.clone(), 1);
 
     let mut royalties = HashMap::new();
     royalties.insert(acr_a.clone(), 100);
@@ -123,13 +123,6 @@ fn test_nft_payouts_panic_token() {
 
     let mut contract = Contract::nft_init(acc_x.clone());
 
-    testing_env!(VMContextBuilder::new()
-        .predecessor_account_id(acc_x.clone())
-        .attached_deposit(1)
-        .is_view(false)
-        .build());
-    contract.nft_allow_minting(acc_x.clone());
-
     // Check the token info
     testing_env!(VMContextBuilder::new().is_view(true).build());
 
@@ -159,7 +152,7 @@ fn test_nft_payouts_panic_count() {
         .attached_deposit(1)
         .is_view(false)
         .build());
-    contract.nft_allow_minting(acc_x.clone());
+    contract.nft_allow_minting(acc_x.clone(), 1);
 
     let mut royalties = HashMap::new();
     royalties.insert(acr_a.clone(), 100);
@@ -221,7 +214,7 @@ fn test_nft_transfer_payouts_panic_count() {
         .attached_deposit(1)
         .is_view(false)
         .build());
-    contract.nft_allow_minting(acc_x.clone());
+    contract.nft_allow_minting(acc_x.clone(), 1);
 
     let mut royalties = HashMap::new();
     royalties.insert(acr_a.clone(), 100);

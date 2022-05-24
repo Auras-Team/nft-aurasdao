@@ -20,7 +20,7 @@ fn test_nft_approval() {
         .attached_deposit(1)
         .is_view(false)
         .build());
-    contract.nft_allow_minting(acc_x.clone());
+    contract.nft_allow_minting(acc_x.clone(), 1);
 
     testing_env!(VMContextBuilder::new()
         .predecessor_account_id(acc_x.clone())
@@ -254,7 +254,7 @@ fn test_nft_approve_panic_access() {
         .attached_deposit(1)
         .is_view(false)
         .build());
-    contract.nft_allow_minting(acc_x.clone());
+    contract.nft_allow_minting(acc_x.clone(), 1);
 
     testing_env!(VMContextBuilder::new()
         .predecessor_account_id(acc_x.clone())
@@ -303,7 +303,7 @@ fn test_nft_revoke_panic_access() {
         .attached_deposit(1)
         .is_view(false)
         .build());
-    contract.nft_allow_minting(acc_x.clone());
+    contract.nft_allow_minting(acc_x.clone(), 1);
 
     testing_env!(VMContextBuilder::new()
         .predecessor_account_id(acc_x.clone())
@@ -352,7 +352,7 @@ fn test_nft_revoke_all_panic_access() {
         .attached_deposit(1)
         .is_view(false)
         .build());
-    contract.nft_allow_minting(acc_x.clone());
+    contract.nft_allow_minting(acc_x.clone(), 1);
 
     testing_env!(VMContextBuilder::new()
         .predecessor_account_id(acc_x.clone())
@@ -409,7 +409,7 @@ fn test_nft_approval_panic_transfer() {
         .attached_deposit(1)
         .is_view(false)
         .build());
-    contract.nft_allow_minting(acc_x.clone());
+    contract.nft_allow_minting(acc_x.clone(), 1);
 
     testing_env!(VMContextBuilder::new()
         .predecessor_account_id(acc_x.clone())
@@ -473,7 +473,7 @@ fn test_nft_approval_panic_transfer_id() {
         .attached_deposit(1)
         .is_view(false)
         .build());
-    contract.nft_allow_minting(acc_x.clone());
+    contract.nft_allow_minting(acc_x.clone(), 1);
 
     testing_env!(VMContextBuilder::new()
         .predecessor_account_id(acc_x.clone())

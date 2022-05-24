@@ -54,7 +54,7 @@ fn test_nft_enumeration() {
         .attached_deposit(1)
         .is_view(false)
         .build());
-    contract.nft_allow_minting(acc_x.clone());
+    contract.nft_allow_minting(acc_x.clone(), 5);
 
     _mint_token(&mut contract, tkn_a.clone(), acc_a.clone(), acc_x.clone());
     _mint_token(&mut contract, tkn_b.clone(), acc_b.clone(), acc_x.clone());

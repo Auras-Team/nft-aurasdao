@@ -38,11 +38,11 @@ pub struct Contract {
     //keeps track of the metadata for the contract
     pub metadata: LazyOption<ContractMetadata>,
 
-    //keep track of accounts that can mint NFTs
-    pub allowed_list_mint: LookupSet<AccountId>,
-
     //keeps track of the token struct for a given token ID
     pub tokens_by_id: LookupMap<TokenId, Token>,
+
+    //keep track of accounts and amount that can be minted
+    pub allowed_list_mint: LookupMap<AccountId, u64>,
 
     //keeps track of the token metadata for a given token ID
     pub token_data_by_id: UnorderedMap<TokenId, TokenMetadata>,
@@ -93,7 +93,7 @@ impl Contract {
                 }),
             ),
             //Storage keys are simply the prefixes used for storage to avoid data collision.
-            allowed_list_mint: LookupSet::new(
+            allowed_list_mint: LookupMap::new(
                 StorageKey::ContractAllowListMint.try_to_vec().unwrap(),
             ),
             tokens_per_owner: LookupMap::new(StorageKey::TokensPerOwner.try_to_vec().unwrap()),
@@ -110,7 +110,7 @@ impl Contract {
 #[near_bindgen]
 impl Contract {
     #[payable]
-    pub fn nft_allow_minting(&mut self, account_id: AccountId) {
+    pub fn nft_allow_minting(&mut self, account_id: AccountId, amount: u64) {
         //assert that the owner attached 1 yoctoNEAR for security reasons
         assert_one_yocto();
         //assert the the sender is the owner of the contract
@@ -119,8 +119,8 @@ impl Contract {
             self.owner_id,
             "Only owner can allow minting access",
         );
-        //remove the account to the minting whitelist
-        self.allowed_list_mint.insert(&account_id);
+        //insert the account and the limit to the minting whitelist
+        self.allowed_list_mint.insert(&account_id, &amount);
     }
 
     #[payable]

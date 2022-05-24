@@ -35,7 +35,7 @@ fn test_nft_metadata_token() {
         .attached_deposit(1)
         .is_view(false)
         .build());
-    contract.nft_allow_minting(acc_x.clone());
+    contract.nft_allow_minting(acc_x.clone(), 1);
 
     let metadata = TokenMetadata {
         title: Some(tkn_a.clone()),

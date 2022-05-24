@@ -1,3 +1,5 @@
+use near_sdk::require;
+
 use crate::*;
 
 #[near_bindgen]
@@ -10,22 +12,22 @@ impl Contract {
         receiver_id: AccountId,
         perpetual_royalties: Option<HashMap<AccountId, u32>>,
     ) {
+        let sender_id = env::predecessor_account_id();
+
         //ensure that the predecessor has minting access
-        let mint_access = self
+        let mint_count = self
             .allowed_list_mint
-            .contains(&env::predecessor_account_id());
-        assert_eq!(
-            mint_access, true,
-            "Account doesn't have permission to call mint function"
-        );
+            .get(&sender_id)
+            .expect("Account is not authorized to mint");
+        require!(mint_count > 0, "Account has no mints remaining");
 
         //measure the initial storage being used on the contract
         let initial_storage_usage = env::storage_usage();
 
-        // create a royalty map to store in the token
+        //create a royalty map to store in the token
         let mut royalty = HashMap::new();
 
-        // if perpetual royalties were passed into the function:
+        //if perpetual royalties were passed into the function:
         if let Some(perpetual_royalties) = perpetual_royalties {
             //make sure that the length of the perpetual royalties is below 7 since we won't have enough GAS to pay out that many people
             assert!(
@@ -92,6 +94,9 @@ impl Contract {
 
         // Log the serialized json.
         env::log_str(&nft_mint_log.to_string());
+
+        //update the mint counter for the senders account
+        self.allowed_list_mint.insert(&sender_id, &(mint_count - 1));
 
         //calculate the required storage which was the used - initial
         let required_storage_in_bytes = env::storage_usage() - initial_storage_usage;
