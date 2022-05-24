@@ -67,18 +67,12 @@ fn test_nft_metadata_token() {
     contract.nft_allow_minting(acc_x.clone(), 1);
 
     let metadata = TokenMetadata {
-        title: Some(tkn_a.clone()),
-        description: Some("aa".to_string()),
-        media: Some("bb".to_string()),
-        media_hash: Some("cc".to_string()),
-        copies: Some(0),
-        issued_at: Some(1),
-        expires_at: Some(2),
-        starts_at: Some(3),
-        updated_at: Some(4),
-        extra: Some("dd".to_string()),
-        reference: Some("ee".to_string()),
-        reference_hash: Some("ff".to_string()),
+        title: tkn_a.clone(),
+        description: "aa".to_string(),
+        media: "bb".to_string(),
+        media_hash: "cc".to_string(),
+        extra: "dd".to_string(),
+        issued_at: 123,
     };
 
     testing_env!(VMContextBuilder::new()
@@ -96,13 +90,13 @@ fn test_nft_metadata_token() {
     assert!(data.metadata.media.expect("nust be set") == "bb".to_string());
     assert!(data.metadata.media_hash.expect("nust be set") == "cc".to_string());
 
-    assert!(data.metadata.copies.expect("nust be set") == 0);
-    assert!(data.metadata.issued_at.expect("nust be set") == 1);
-    assert!(data.metadata.expires_at.expect("nust be set") == 2);
-    assert!(data.metadata.starts_at.expect("nust be set") == 3);
-    assert!(data.metadata.updated_at.expect("nust be set") == 4);
+    assert!(data.metadata.copies.expect("nust be set") == 1);
+    assert!(data.metadata.issued_at.expect("nust be set") == 123);
+    assert!(data.metadata.updated_at.expect("nust be set") == 123);
+    assert!(data.metadata.expires_at.is_none());
+    assert!(data.metadata.starts_at.is_none());
 
     assert!(data.metadata.extra.expect("nust be set") == "dd".to_string());
-    assert!(data.metadata.reference.expect("nust be set") == "ee".to_string());
-    assert!(data.metadata.reference_hash.expect("nust be set") == "ff".to_string());
+    assert!(data.metadata.reference.is_none());
+    assert!(data.metadata.reference_hash.is_none());
 }

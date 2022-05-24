@@ -10,24 +10,18 @@ fn _mint_token(
 ) {
     testing_env!(VMContextBuilder::new()
         .predecessor_account_id(creator_id.clone())
-        .attached_deposit(6000000000000000000000)
+        .attached_deposit(MINT_COST)
         .is_view(false)
         .build());
     contract.nft_mint(
         token_id.clone(),
         TokenMetadata {
-            title: Some(token_id.clone()),
-            description: None,
-            media: None,
-            media_hash: None,
-            copies: None,
-            issued_at: None,
-            expires_at: None,
-            starts_at: None,
-            updated_at: None,
-            extra: None,
-            reference: None,
-            reference_hash: None,
+            title: token_id.clone(),
+            description: "aa".to_string(),
+            media: "bb".to_string(),
+            media_hash: "cc".to_string(),
+            extra: "dd".to_string(),
+            issued_at: 1,
         },
         owner_id.clone(),
         None,

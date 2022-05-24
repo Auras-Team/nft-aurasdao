@@ -3,6 +3,8 @@ use near_sdk::{testing_env, AccountId};
 
 use crate::*;
 
+const MINT_COST: Balance = 6200000000000000000000;
+
 mod approval;
 mod enumeration;
 mod events;
@@ -31,24 +33,18 @@ fn test_nft_approval_allow_access() {
     // Test nft_allow_minting: check
     testing_env!(VMContextBuilder::new()
         .predecessor_account_id(acc_a.clone())
-        .attached_deposit(6000000000000000000000)
+        .attached_deposit(MINT_COST)
         .is_view(false)
         .build());
     contract.nft_mint(
         tkn_a.clone(),
         TokenMetadata {
-            title: Some("Token A".to_string()),
-            description: None,
-            media: None,
-            media_hash: None,
-            copies: None,
-            issued_at: None,
-            expires_at: None,
-            starts_at: None,
-            updated_at: None,
-            extra: None,
-            reference: None,
-            reference_hash: None,
+            title: tkn_a.clone(),
+            description: "aa".to_string(),
+            media: "bb".to_string(),
+            media_hash: "cc".to_string(),
+            extra: "dd".to_string(),
+            issued_at: 1,
         },
         acc_b.clone(),
         None,
@@ -188,24 +184,18 @@ fn test_nft_transfer_panic_owner() {
 
     testing_env!(VMContextBuilder::new()
         .predecessor_account_id(acc_x.clone())
-        .attached_deposit(6000000000000000000000)
+        .attached_deposit(MINT_COST)
         .is_view(false)
         .build());
     contract.nft_mint(
         tkn_a.clone(),
         TokenMetadata {
-            title: Some("Token A".to_string()),
-            description: None,
-            media: None,
-            media_hash: None,
-            copies: None,
-            issued_at: None,
-            expires_at: None,
-            starts_at: None,
-            updated_at: None,
-            extra: None,
-            reference: None,
-            reference_hash: None,
+            title: tkn_a.clone(),
+            description: "aa".to_string(),
+            media: "bb".to_string(),
+            media_hash: "cc".to_string(),
+            extra: "dd".to_string(),
+            issued_at: 1,
         },
         acc_a.clone(),
         None,

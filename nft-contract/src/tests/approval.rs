@@ -24,24 +24,18 @@ fn test_nft_approval() {
 
     testing_env!(VMContextBuilder::new()
         .predecessor_account_id(acc_x.clone())
-        .attached_deposit(6000000000000000000000)
+        .attached_deposit(MINT_COST)
         .is_view(false)
         .build());
     contract.nft_mint(
         tkn_a.clone(),
         TokenMetadata {
-            title: Some("Token A".to_string()),
-            description: None,
-            media: None,
-            media_hash: None,
-            copies: None,
-            issued_at: None,
-            expires_at: None,
-            starts_at: None,
-            updated_at: None,
-            extra: None,
-            reference: None,
-            reference_hash: None,
+            title: tkn_a.clone(),
+            description: "aa".to_string(),
+            media: "bb".to_string(),
+            media_hash: "cc".to_string(),
+            extra: "dd".to_string(),
+            issued_at: 1,
         },
         acc_a.clone(),
         None,
@@ -258,24 +252,18 @@ fn test_nft_approve_panic_access() {
 
     testing_env!(VMContextBuilder::new()
         .predecessor_account_id(acc_x.clone())
-        .attached_deposit(6000000000000000000000)
+        .attached_deposit(MINT_COST)
         .is_view(false)
         .build());
     contract.nft_mint(
         tkn_a.clone(),
         TokenMetadata {
-            title: Some("Token A".to_string()),
-            description: None,
-            media: None,
-            media_hash: None,
-            copies: None,
-            issued_at: None,
-            expires_at: None,
-            starts_at: None,
-            updated_at: None,
-            extra: None,
-            reference: None,
-            reference_hash: None,
+            title: tkn_a.clone(),
+            description: "aa".to_string(),
+            media: "bb".to_string(),
+            media_hash: "cc".to_string(),
+            extra: "dd".to_string(),
+            issued_at: 1,
         },
         acc_a.clone(),
         None,
@@ -307,24 +295,18 @@ fn test_nft_revoke_panic_access() {
 
     testing_env!(VMContextBuilder::new()
         .predecessor_account_id(acc_x.clone())
-        .attached_deposit(6000000000000000000000)
+        .attached_deposit(MINT_COST)
         .is_view(false)
         .build());
     contract.nft_mint(
         tkn_a.clone(),
         TokenMetadata {
-            title: Some("Token A".to_string()),
-            description: None,
-            media: None,
-            media_hash: None,
-            copies: None,
-            issued_at: None,
-            expires_at: None,
-            starts_at: None,
-            updated_at: None,
-            extra: None,
-            reference: None,
-            reference_hash: None,
+            title: tkn_a.clone(),
+            description: "aa".to_string(),
+            media: "bb".to_string(),
+            media_hash: "cc".to_string(),
+            extra: "dd".to_string(),
+            issued_at: 1,
         },
         acc_a.clone(),
         None,
@@ -356,24 +338,18 @@ fn test_nft_revoke_all_panic_access() {
 
     testing_env!(VMContextBuilder::new()
         .predecessor_account_id(acc_x.clone())
-        .attached_deposit(6000000000000000000000)
+        .attached_deposit(MINT_COST)
         .is_view(false)
         .build());
     contract.nft_mint(
         tkn_a.clone(),
         TokenMetadata {
-            title: Some("Token A".to_string()),
-            description: None,
-            media: None,
-            media_hash: None,
-            copies: None,
-            issued_at: None,
-            expires_at: None,
-            starts_at: None,
-            updated_at: None,
-            extra: None,
-            reference: None,
-            reference_hash: None,
+            title: tkn_a.clone(),
+            description: "aa".to_string(),
+            media: "bb".to_string(),
+            media_hash: "cc".to_string(),
+            extra: "dd".to_string(),
+            issued_at: 1,
         },
         acc_a.clone(),
         None,
@@ -413,24 +389,18 @@ fn test_nft_approval_panic_transfer() {
 
     testing_env!(VMContextBuilder::new()
         .predecessor_account_id(acc_x.clone())
-        .attached_deposit(6000000000000000000000)
+        .attached_deposit(MINT_COST)
         .is_view(false)
         .build());
     contract.nft_mint(
         tkn_a.clone(),
         TokenMetadata {
-            title: Some("Token A".to_string()),
-            description: None,
-            media: None,
-            media_hash: None,
-            copies: None,
-            issued_at: None,
-            expires_at: None,
-            starts_at: None,
-            updated_at: None,
-            extra: None,
-            reference: None,
-            reference_hash: None,
+            title: tkn_a.clone(),
+            description: "aa".to_string(),
+            media: "bb".to_string(),
+            media_hash: "cc".to_string(),
+            extra: "dd".to_string(),
+            issued_at: 1,
         },
         acc_a.clone(),
         None,
@@ -477,24 +447,18 @@ fn test_nft_approval_panic_transfer_id() {
 
     testing_env!(VMContextBuilder::new()
         .predecessor_account_id(acc_x.clone())
-        .attached_deposit(6000000000000000000000)
+        .attached_deposit(MINT_COST)
         .is_view(false)
         .build());
     contract.nft_mint(
         tkn_a.clone(),
         TokenMetadata {
-            title: Some("Token A".to_string()),
-            description: None,
-            media: None,
-            media_hash: None,
-            copies: None,
-            issued_at: None,
-            expires_at: None,
-            starts_at: None,
-            updated_at: None,
-            extra: None,
-            reference: None,
-            reference_hash: None,
+            title: tkn_a.clone(),
+            description: "aa".to_string(),
+            media: "bb".to_string(),
+            media_hash: "cc".to_string(),
+            extra: "dd".to_string(),
+            issued_at: 1,
         },
         acc_a.clone(),
         None,
@@ -507,7 +471,7 @@ fn test_nft_approval_panic_transfer_id() {
     // Approve setup
     testing_env!(VMContextBuilder::new()
         .predecessor_account_id(acc_a.clone())
-        .attached_deposit(210000000000000000000)
+        .attached_deposit(MINT_COST)
         .is_view(false)
         .build());
 

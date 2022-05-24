@@ -35,18 +35,12 @@ fn test_nft_royalty() {
     royalties.insert(acr_f.clone(), 600);
 
     let metadata = TokenMetadata {
-        title: Some(tkn_a.clone()),
-        description: Some("aa".to_string()),
-        media: Some("bb".to_string()),
-        media_hash: Some("cc".to_string()),
-        copies: Some(0),
-        issued_at: Some(1),
-        expires_at: Some(2),
-        starts_at: Some(3),
-        updated_at: Some(4),
-        extra: Some("dd".to_string()),
-        reference: Some("ee".to_string()),
-        reference_hash: Some("ff".to_string()),
+        title: tkn_a.clone(),
+        description: "aa".to_string(),
+        media: "bb".to_string(),
+        media_hash: "cc".to_string(),
+        extra: "dd".to_string(),
+        issued_at: 1,
     };
 
     testing_env!(VMContextBuilder::new()
@@ -163,18 +157,12 @@ fn test_nft_payouts_panic_count() {
     royalties.insert(acr_f.clone(), 600);
 
     let metadata = TokenMetadata {
-        title: Some(tkn_a.clone()),
-        description: Some("aa".to_string()),
-        media: Some("bb".to_string()),
-        media_hash: Some("cc".to_string()),
-        copies: Some(0),
-        issued_at: Some(1),
-        expires_at: Some(2),
-        starts_at: Some(3),
-        updated_at: Some(4),
-        extra: Some("dd".to_string()),
-        reference: Some("ee".to_string()),
-        reference_hash: Some("ff".to_string()),
+        title: tkn_a.clone(),
+        description: "aa".to_string(),
+        media: "bb".to_string(),
+        media_hash: "cc".to_string(),
+        extra: "dd".to_string(),
+        issued_at: 1,
     };
 
     testing_env!(VMContextBuilder::new()
@@ -225,18 +213,12 @@ fn test_nft_transfer_payouts_panic_count() {
     royalties.insert(acr_f.clone(), 600);
 
     let metadata = TokenMetadata {
-        title: Some(tkn_a.clone()),
-        description: Some("aa".to_string()),
-        media: Some("bb".to_string()),
-        media_hash: Some("cc".to_string()),
-        copies: Some(0),
-        issued_at: Some(1),
-        expires_at: Some(2),
-        starts_at: Some(3),
-        updated_at: Some(4),
-        extra: Some("dd".to_string()),
-        reference: Some("ee".to_string()),
-        reference_hash: Some("ff".to_string()),
+        title: tkn_a.clone(),
+        description: "aa".to_string(),
+        media: "bb".to_string(),
+        media_hash: "cc".to_string(),
+        extra: "dd".to_string(),
+        issued_at: 1,
     };
 
     testing_env!(VMContextBuilder::new()

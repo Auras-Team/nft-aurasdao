@@ -25,18 +25,12 @@ fn test_nft_mint() {
     royalties.insert(AccountId::new_unchecked(String::from("royalty.f")), 2500);
 
     let metadata = TokenMetadata {
-        title: Some(tkn_a.clone()),
-        description: Some("aa".to_string()),
-        media: Some("bb".to_string()),
-        media_hash: Some("cc".to_string()),
-        copies: Some(0),
-        issued_at: Some(1),
-        expires_at: Some(2),
-        starts_at: Some(3),
-        updated_at: Some(4),
-        extra: Some("dd".to_string()),
-        reference: Some("ee".to_string()),
-        reference_hash: Some("ff".to_string()),
+        title: tkn_a.clone(),
+        description: "aa".to_string(),
+        media: "bb".to_string(),
+        media_hash: "cc".to_string(),
+        extra: "dd".to_string(),
+        issued_at: 1,
     };
 
     testing_env!(VMContextBuilder::new()
@@ -48,7 +42,7 @@ fn test_nft_mint() {
 }
 
 #[test]
-#[should_panic(expected = "Must attach 7780000000000000000000 yoctoNEAR to cover storage")]
+#[should_panic(expected = "Must attach 7220000000000000000000 yoctoNEAR to cover storage")]
 fn test_nft_mint_panic_cost() {
     let tkn_a = String::from("token.a");
 
@@ -73,18 +67,12 @@ fn test_nft_mint_panic_cost() {
     royalties.insert(AccountId::new_unchecked(String::from("royalty.f")), 100);
 
     let metadata = TokenMetadata {
-        title: Some(tkn_a.clone()),
-        description: Some("aa".to_string()),
-        media: Some("bb".to_string()),
-        media_hash: Some("cc".to_string()),
-        copies: Some(0),
-        issued_at: Some(1),
-        expires_at: Some(2),
-        starts_at: Some(3),
-        updated_at: Some(4),
-        extra: Some("dd".to_string()),
-        reference: Some("ee".to_string()),
-        reference_hash: Some("ff".to_string()),
+        title: tkn_a.clone(),
+        description: "aa".to_string(),
+        media: "bb".to_string(),
+        media_hash: "cc".to_string(),
+        extra: "dd".to_string(),
+        issued_at: 1,
     };
 
     testing_env!(VMContextBuilder::new()
@@ -128,18 +116,12 @@ fn test_nft_mint_panic_token_id() {
     contract.nft_mint(
         tkn_a.clone(),
         TokenMetadata {
-            title: Some(tkn_a.clone()),
-            description: Some("aa".to_string()),
-            media: Some("bb".to_string()),
-            media_hash: Some("cc".to_string()),
-            copies: Some(0),
-            issued_at: Some(1),
-            expires_at: Some(2),
-            starts_at: Some(3),
-            updated_at: Some(4),
-            extra: Some("dd".to_string()),
-            reference: Some("ee".to_string()),
-            reference_hash: Some("ff".to_string()),
+            title: tkn_a.clone(),
+            description: "aaa".to_string(),
+            media: "bbb".to_string(),
+            media_hash: "ccc".to_string(),
+            extra: "ddd".to_string(),
+            issued_at: 11,
         },
         acc_a.clone(),
         Some(royalties.clone()),
@@ -147,18 +129,12 @@ fn test_nft_mint_panic_token_id() {
     contract.nft_mint(
         tkn_a.clone(),
         TokenMetadata {
-            title: Some(tkn_a.clone()),
-            description: Some("aa".to_string()),
-            media: Some("bb".to_string()),
-            media_hash: Some("cc".to_string()),
-            copies: Some(0),
-            issued_at: Some(1),
-            expires_at: Some(2),
-            starts_at: Some(3),
-            updated_at: Some(4),
-            extra: Some("dd".to_string()),
-            reference: Some("ee".to_string()),
-            reference_hash: Some("ff".to_string()),
+            title: tkn_a.clone(),
+            description: "aa".to_string(),
+            media: "bb".to_string(),
+            media_hash: "cc".to_string(),
+            extra: "dd".to_string(),
+            issued_at: 1,
         },
         acc_a.clone(),
         Some(royalties),
@@ -183,18 +159,12 @@ fn test_nft_mint_panic_access() {
     contract.nft_allow_minting(acc_x.clone(), 1);
 
     let metadata = TokenMetadata {
-        title: Some(tkn_a.clone()),
-        description: Some("aa".to_string()),
-        media: Some("bb".to_string()),
-        media_hash: Some("cc".to_string()),
-        copies: Some(0),
-        issued_at: Some(1),
-        expires_at: Some(2),
-        starts_at: Some(3),
-        updated_at: Some(4),
-        extra: Some("dd".to_string()),
-        reference: Some("ee".to_string()),
-        reference_hash: Some("ff".to_string()),
+        title: tkn_a.clone(),
+        description: "aa".to_string(),
+        media: "bb".to_string(),
+        media_hash: "cc".to_string(),
+        extra: "dd".to_string(),
+        issued_at: 1,
     };
 
     testing_env!(VMContextBuilder::new()
@@ -224,18 +194,12 @@ fn test_nft_mint_panic_amount() {
     contract.nft_allow_minting(acc_a.clone(), 1);
 
     let metadata = TokenMetadata {
-        title: Some(tkn_a.clone()),
-        description: Some("aa".to_string()),
-        media: Some("bb".to_string()),
-        media_hash: Some("cc".to_string()),
-        copies: Some(0),
-        issued_at: Some(1),
-        expires_at: Some(2),
-        starts_at: Some(3),
-        updated_at: Some(4),
-        extra: Some("dd".to_string()),
-        reference: Some("ee".to_string()),
-        reference_hash: Some("ff".to_string()),
+        title: tkn_a.clone(),
+        description: "aa".to_string(),
+        media: "bb".to_string(),
+        media_hash: "cc".to_string(),
+        extra: "dd".to_string(),
+        issued_at: 1,
     };
 
     testing_env!(VMContextBuilder::new()
@@ -274,18 +238,12 @@ fn test_nft_mint_panic_royalty_count() {
     royalties.insert(AccountId::new_unchecked(String::from("royalty.x")), 100);
 
     let metadata = TokenMetadata {
-        title: Some(tkn_a.clone()),
-        description: Some("aa".to_string()),
-        media: Some("bb".to_string()),
-        media_hash: Some("cc".to_string()),
-        copies: Some(0),
-        issued_at: Some(1),
-        expires_at: Some(2),
-        starts_at: Some(3),
-        updated_at: Some(4),
-        extra: Some("dd".to_string()),
-        reference: Some("ee".to_string()),
-        reference_hash: Some("ff".to_string()),
+        title: tkn_a.clone(),
+        description: "aa".to_string(),
+        media: "bb".to_string(),
+        media_hash: "cc".to_string(),
+        extra: "dd".to_string(),
+        issued_at: 1,
     };
 
     testing_env!(VMContextBuilder::new()
@@ -321,18 +279,12 @@ fn test_nft_mint_panic_royalty_amount() {
     royalties.insert(AccountId::new_unchecked(String::from("royalty.e")), 1);
 
     let metadata = TokenMetadata {
-        title: Some(tkn_a.clone()),
-        description: Some("aa".to_string()),
-        media: Some("bb".to_string()),
-        media_hash: Some("cc".to_string()),
-        copies: Some(0),
-        issued_at: Some(1),
-        expires_at: Some(2),
-        starts_at: Some(3),
-        updated_at: Some(4),
-        extra: Some("dd".to_string()),
-        reference: Some("ee".to_string()),
-        reference_hash: Some("ff".to_string()),
+        title: tkn_a.clone(),
+        description: "aa".to_string(),
+        media: "bb".to_string(),
+        media_hash: "cc".to_string(),
+        extra: "dd".to_string(),
+        issued_at: 1,
     };
 
     testing_env!(VMContextBuilder::new()

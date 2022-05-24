@@ -200,7 +200,20 @@ impl NonFungibleTokenCore for Contract {
             Some(JsonToken {
                 token_id,
                 owner_id: token.owner_id,
-                metadata,
+                metadata: JsonMetadata {
+                    title: Some(metadata.title),
+                    description: Some(metadata.description),
+                    media: Some(metadata.media),
+                    media_hash: Some(metadata.media_hash),
+                    extra: Some(metadata.extra),
+                    copies: Some(1),
+                    issued_at: Some(metadata.issued_at),
+                    updated_at: Some(metadata.issued_at),
+                    expires_at: None,
+                    starts_at: None,
+                    reference: None,
+                    reference_hash: None,
+                },
                 approved_account_ids: token.approved_account_ids,
                 royalty: token.royalty,
             })
