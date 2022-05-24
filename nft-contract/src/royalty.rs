@@ -1,3 +1,5 @@
+use near_sdk::require;
+
 use crate::*;
 
 pub trait NftRoyalties {
@@ -56,7 +58,7 @@ impl NftRoyalties for Contract {
         let token = self.tokens_by_id.get(&token_id).expect("Token not found");
 
         //make sure we're not paying out to too many people (GAS limits this)
-        assert!(
+        require!(
             token.royalty.len() as u32 <= max_len_payout,
             "Market cannot payout to that many receivers"
         );
@@ -76,8 +78,8 @@ impl NftRoyalties for Contract {
         balance: U128,
         max_len_payout: u32,
     ) -> Payout {
-        //assert that the user attached 1 yocto NEAR for security reasons
-        assert_one_yocto();
+        //require that the user attached 1 yocto NEAR for security reasons
+        require_one_yocto();
         //get the sender ID
         let sender_id = env::predecessor_account_id();
         //transfer the token to the passed in receiver and get the previous token object back
@@ -87,7 +89,7 @@ impl NftRoyalties for Contract {
         refund_approved_account_ids(token.owner_id.clone(), &token.approved_account_ids);
 
         //make sure we're not paying out to too many people (GAS limits this)
-        assert!(
+        require!(
             token.royalty.len() as u32 <= max_len_payout,
             "Market cannot payout to that many receivers"
         );

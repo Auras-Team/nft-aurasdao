@@ -30,7 +30,7 @@ impl Contract {
         //if perpetual royalties were passed into the function:
         if let Some(perpetual_royalties) = perpetual_royalties {
             //make sure that the length of the perpetual royalties is below 7 since we won't have enough GAS to pay out that many people
-            assert!(
+            require!(
                 perpetual_royalties.len() < 7,
                 "Cannot add more than 6 perpetual royalty amounts"
             );
@@ -45,7 +45,7 @@ impl Contract {
             }
 
             //verify max base points to set 100.00 percentage values
-            assert!(
+            require!(
                 total_amount <= 10000,
                 "Total royalty shares can not be more then 10000 base points"
             );
@@ -64,7 +64,7 @@ impl Contract {
         };
 
         //insert the token ID and token struct and make sure that the token doesn't exist
-        assert!(
+        require!(
             self.tokens_by_id.insert(&token_id, &token).is_none(),
             "Token id already exists"
         );

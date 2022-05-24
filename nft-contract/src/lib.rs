@@ -3,7 +3,8 @@ use near_sdk::collections::{LazyOption, LookupMap, UnorderedMap, UnorderedSet};
 use near_sdk::json_types::U128;
 use near_sdk::serde::{Deserialize, Serialize};
 use near_sdk::{
-    env, near_bindgen, AccountId, Balance, CryptoHash, PanicOnDefault, Promise, PromiseOrValue,
+    env, near_bindgen, require, AccountId, Balance, CryptoHash, PanicOnDefault, Promise,
+    PromiseOrValue,
 };
 use std::collections::HashMap;
 
@@ -123,12 +124,11 @@ impl Contract {
 impl Contract {
     #[payable]
     pub fn nft_allow_minting(&mut self, account_id: AccountId, amount: u64) {
-        //assert that the owner attached 1 yoctoNEAR for security reasons
-        assert_one_yocto();
-        //assert the the sender is the owner of the contract
-        assert_eq!(
-            env::predecessor_account_id(),
-            self.owner_id,
+        //require that the owner attached 1 yoctoNEAR for security reasons
+        require_one_yocto();
+        //require the the sender is the owner of the contract
+        require!(
+            env::predecessor_account_id() == self.owner_id,
             "Only owner can allow minting access",
         );
         //insert the account and the limit to the minting whitelist
@@ -137,12 +137,11 @@ impl Contract {
 
     #[payable]
     pub fn nft_revoke_minting(&mut self, account_id: AccountId) {
-        //assert that the owner attached 1 yoctoNEAR for security reasons
-        assert_one_yocto();
-        //assert the the sender is the owner of the contract
-        assert_eq!(
-            env::predecessor_account_id(),
-            self.owner_id,
+        //require that the owner attached 1 yoctoNEAR for security reasons
+        require_one_yocto();
+        //require the the sender is the owner of the contract
+        require!(
+            env::predecessor_account_id() == self.owner_id,
             "Only owner can revoke minting access",
         );
         //remove the account to the minting whitelist

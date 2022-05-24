@@ -40,8 +40,8 @@ impl NftApproval for Contract {
     //allow a specific account ID to approve a token on your behalf
     #[payable]
     fn nft_approve(&mut self, token_id: TokenId, account_id: AccountId, msg: Option<String>) {
-        // assert at least one yocto for security reasons and to  pay for storage on the contract
-        assert_at_least_one_yocto();
+        //require at least one yocto for security reasons and to  pay for storage on the contract
+        require_at_least_one_yocto();
 
         //get the token object from the token ID
         let mut token = self.tokens_by_id.get(&token_id).expect("Token not found");
@@ -124,13 +124,13 @@ impl NftApproval for Contract {
     //revoke a specific account from transferring the token on your behalf
     #[payable]
     fn nft_revoke(&mut self, token_id: TokenId, account_id: AccountId) {
-        //assert that the user attached exactly 1 yoctoNEAR for security reasons
-        assert_one_yocto();
+        //require that the user attached exactly 1 yoctoNEAR for security reasons
+        require_one_yocto();
 
         //get the token object using the passed in token_id
         let mut token = self.tokens_by_id.get(&token_id).expect("Token not found");
 
-        //get the caller of the function and assert that they are the owner of the token
+        //get the caller of the function and require that they are the owner of the token
         let predecessor_account_id = env::predecessor_account_id();
         require!(
             &env::predecessor_account_id() == &token.owner_id,
@@ -150,8 +150,8 @@ impl NftApproval for Contract {
     //revoke all accounts from transferring the token on your behalf
     #[payable]
     fn nft_revoke_all(&mut self, token_id: TokenId) {
-        //assert that the caller attached exactly 1 yoctoNEAR for security
-        assert_one_yocto();
+        //require that the caller attached exactly 1 yoctoNEAR for security
+        require_one_yocto();
 
         //get the token object from the passed in token ID
         let mut token = self.tokens_by_id.get(&token_id).expect("Token not found");

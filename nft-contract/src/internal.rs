@@ -1,5 +1,5 @@
 use crate::*;
-use near_sdk::CryptoHash;
+use near_sdk::{require, CryptoHash};
 use std::mem::size_of;
 
 //convert the royalty percentage and amount to pay into a payout (U128)
@@ -48,17 +48,16 @@ pub(crate) fn hash_account_id(account_id: &AccountId) -> CryptoHash {
 }
 
 //used to make sure the user attached exactly 1 yoctoNEAR
-pub(crate) fn assert_one_yocto() {
-    assert_eq!(
-        env::attached_deposit(),
-        1,
+pub(crate) fn require_one_yocto() {
+    require!(
+        env::attached_deposit() == 1,
         "Requires attached deposit of exactly 1 yoctoNEAR",
     )
 }
 
-//Assert that the user has attached at least 1 yoctoNEAR (for security reasons and to pay for storage)
-pub(crate) fn assert_at_least_one_yocto() {
-    assert!(
+//require that the user has attached at least 1 yoctoNEAR (for security reasons and to pay for storage)
+pub(crate) fn require_at_least_one_yocto() {
+    require!(
         env::attached_deposit() >= 1,
         "Requires attached deposit of at least 1 yoctoNEAR",
     )
@@ -72,10 +71,9 @@ pub(crate) fn refund_deposit(storage_used: u64) {
     let attached_deposit = env::attached_deposit();
 
     //make sure that the attached deposit is greater than or equal to the required cost
-    assert!(
+    require!(
         required_cost <= attached_deposit,
-        "Must attach {} yoctoNEAR to cover storage",
-        required_cost,
+        format!("Must attach {} yoctoNEAR to cover storage", required_cost),
     );
 
     //get the refund amount from the attached deposit - required cost
@@ -165,17 +163,19 @@ impl Contract {
                 let actual_approval_id = token.approved_account_ids.get(sender_id).unwrap();
 
                 //make sure that the actual approval ID is the same as the one provided
-                assert_eq!(
-                    actual_approval_id, &enforced_approval_id,
-                    "The actual approval_id {} is different from the given approval_id {}",
-                    actual_approval_id, enforced_approval_id,
+                require!(
+                    actual_approval_id == &enforced_approval_id,
+                    format!(
+                        "The actual approval_id {} is different from the given approval_id {}",
+                        actual_approval_id, enforced_approval_id
+                    ),
                 );
             }
         }
 
         //we make sure that the sender isn't sending the token to themselves
-        assert_ne!(
-            &token.owner_id, receiver_id,
+        require!(
+            &token.owner_id != receiver_id,
             "The token owner and the receiver should be different"
         );
 

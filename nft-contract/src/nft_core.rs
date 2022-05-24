@@ -1,5 +1,5 @@
 use crate::*;
-use near_sdk::{ext_contract, Gas, PromiseResult};
+use near_sdk::{ext_contract, require, Gas, PromiseResult};
 
 const GAS_FOR_RESOLVE_TRANSFER: Gas = Gas(10_000_000_000_000);
 const GAS_FOR_NFT_TRANSFER_CALL: Gas = Gas(25_000_000_000_000 + GAS_FOR_RESOLVE_TRANSFER.0);
@@ -99,8 +99,8 @@ impl NonFungibleTokenCore for Contract {
         approval_id: Option<u64>,
         memo: Option<String>,
     ) {
-        //assert that the user attached exactly 1 yoctoNEAR. This is for security and so that the user will be redirected to the NEAR wallet.
-        assert_one_yocto();
+        //require that the user attached exactly 1 yoctoNEAR. This is for security and so that the user will be redirected to the NEAR wallet.
+        require_one_yocto();
         //get the sender to transfer the token from the sender to the receiver
         let sender_id = env::predecessor_account_id();
 
@@ -126,8 +126,8 @@ impl NonFungibleTokenCore for Contract {
         memo: Option<String>,
         msg: String,
     ) -> PromiseOrValue<bool> {
-        //assert that the user attached exactly 1 yocto for security reasons.
-        assert_one_yocto();
+        //require that the user attached exactly 1 yocto for security reasons.
+        require_one_yocto();
 
         //get the GAS attached to the call
         let attached_gas = env::prepaid_gas();
@@ -138,10 +138,12 @@ impl NonFungibleTokenCore for Contract {
             If this happens, the event will be logged in internal_transfer but the actual transfer logic will be
             reverted due to the panic. This will result in the databases thinking the NFT belongs to the wrong person.
         */
-        assert!(
+        require!(
             attached_gas >= MIN_GAS_FOR_NFT_TRANSFER_CALL,
-            "You cannot attach less than {:?} Gas to nft_transfer_call",
-            MIN_GAS_FOR_NFT_TRANSFER_CALL
+            format!(
+                "You cannot attach less than {:?} Gas to nft_transfer_call",
+                MIN_GAS_FOR_NFT_TRANSFER_CALL
+            )
         );
 
         //get the sender ID
