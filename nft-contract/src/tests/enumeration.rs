@@ -10,22 +10,26 @@ fn _mint_token(
 ) {
     testing_env!(VMContextBuilder::new()
         .predecessor_account_id(creator_id.clone())
-        .attached_deposit(MINT_COST)
+        .attached_deposit(REG_COST)
         .is_view(false)
         .build());
-    contract.nft_mint(
+    let mut map = HashMap::new();
+    map.insert(
         token_id.clone(),
         TokenMetadata {
             title: token_id.clone(),
-            description: "aa".to_string(),
             media: "bb".to_string(),
             media_hash: "cc".to_string(),
-            extra: "dd".to_string(),
-            issued_at: 1,
+            attributes: "dd".to_string(),
         },
-        owner_id.clone(),
-        None,
     );
+    contract.nft_register(map);
+    testing_env!(VMContextBuilder::new()
+        .predecessor_account_id(creator_id.clone())
+        .attached_deposit(MINT_COST)
+        .is_view(false)
+        .build());
+    contract.nft_mint(token_id.clone(), owner_id.clone(), None);
 }
 
 #[test]

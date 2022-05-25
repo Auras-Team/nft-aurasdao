@@ -61,38 +61,46 @@ fn test_nft_metadata_token() {
 
     testing_env!(VMContextBuilder::new()
         .predecessor_account_id(acc_x.clone())
+        .attached_deposit(REG_COST)
+        .is_view(false)
+        .build());
+    let mut map = HashMap::new();
+    map.insert(
+        tkn_a.clone(),
+        TokenMetadata {
+            title: tkn_a.clone(),
+            media: "bb".to_string(),
+            media_hash: "cc".to_string(),
+            attributes: "dd".to_string(),
+        },
+    );
+    contract.nft_register(map);
+
+    testing_env!(VMContextBuilder::new()
+        .predecessor_account_id(acc_x.clone())
         .attached_deposit(1)
         .is_view(false)
         .build());
     contract.nft_allow_minting(acc_x.clone(), 1);
-
-    let metadata = TokenMetadata {
-        title: tkn_a.clone(),
-        description: "aa".to_string(),
-        media: "bb".to_string(),
-        media_hash: "cc".to_string(),
-        extra: "dd".to_string(),
-        issued_at: 123,
-    };
 
     testing_env!(VMContextBuilder::new()
         .predecessor_account_id(acc_x.clone())
         .attached_deposit(7000000000000000000000)
         .is_view(false)
         .build());
-    contract.nft_mint(tkn_a.clone(), metadata, acc_a.clone(), None);
+    contract.nft_mint(tkn_a.clone(), acc_a.clone(), None);
 
     testing_env!(VMContextBuilder::new().is_view(true).build());
     let data = contract.nft_token(tkn_a.clone()).expect("nust be set");
 
     assert!(data.metadata.title.expect("nust be set") == tkn_a.clone());
-    assert!(data.metadata.description.expect("nust be set") == "aa".to_string());
+    assert!(data.metadata.description.is_some());
     assert!(data.metadata.media.expect("nust be set") == "bb".to_string());
     assert!(data.metadata.media_hash.expect("nust be set") == "cc".to_string());
 
     assert!(data.metadata.copies.expect("nust be set") == 1);
-    assert!(data.metadata.issued_at.expect("nust be set") == 123);
-    assert!(data.metadata.updated_at.expect("nust be set") == 123);
+    assert!(data.metadata.issued_at.is_some());
+    assert!(data.metadata.updated_at.is_some());
     assert!(data.metadata.expires_at.is_none());
     assert!(data.metadata.starts_at.is_none());
 

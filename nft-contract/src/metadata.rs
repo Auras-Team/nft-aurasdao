@@ -14,7 +14,7 @@ pub struct ContractMetadata {
     pub name: String,              // required, ex. "Mosaics"
     pub symbol: String,            // required, ex. "MOSIAC"
     pub icon: Option<String>,      // Data URL
-    pub base_uri: Option<String>, // Centralized gateway known to have reliable access to decentralized storage assets referenced by `reference` or `media` URLs
+    pub base_uri: Option<String>, // centralized gateway known to have reliable access to decentralized storage assets referenced by `reference` or `media` URLs
     pub reference: Option<String>, // URL to a JSON file with more info
     pub reference_hash: Option<String>, // Base64-encoded sha256 hash of JSON from reference field. Required if `reference` is included.
 }
@@ -22,18 +22,18 @@ pub struct ContractMetadata {
 #[derive(Clone, BorshDeserialize, BorshSerialize, Serialize, Deserialize)]
 #[serde(crate = "near_sdk::serde")]
 pub struct TokenMetadata {
-    pub title: String,       // ex. "Arch Nemesis: Mail Carrier" or "Parcel #5055"
-    pub description: String, // free-form description
+    pub title: String,      // ex. "Arch Nemesis: Mail Carrier" or "Parcel #5055"
     pub media: String, // URL to associated media, preferably to decentralized, content-addressed storage
     pub media_hash: String, // Base64-encoded sha256 hash of content referenced by the `media` field. Required if `media` is included.
-    pub extra: String, // anything extra the NFT wants to store on-chain. Can be stringified JSON.
-    pub issued_at: u64, // When token was issued or minted, Unix epoch in milliseconds
+    pub attributes: String, // Token attributes as a stringified JSON object.
 }
 
 #[derive(BorshDeserialize, BorshSerialize)]
 pub struct Token {
     //owner of the token
     pub owner_id: AccountId,
+    // When token was minted, Unix epoch in milliseconds
+    pub issued_at: u64,
     //the next approval ID to give out.
     pub next_approval_id: u64,
     //list of approved account IDs that have access to transfer the token. This maps an account ID to an approval ID

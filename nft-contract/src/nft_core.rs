@@ -6,6 +6,8 @@ const GAS_FOR_NFT_TRANSFER_CALL: Gas = Gas(25_000_000_000_000 + GAS_FOR_RESOLVE_
 const MIN_GAS_FOR_NFT_TRANSFER_CALL: Gas = Gas(100_000_000_000_000);
 const NO_DEPOSIT: Balance = 0;
 
+const META_DESCRIPTION: &str = "An exchange of energies.";
+
 pub trait NonFungibleTokenCore {
     //transfers an NFT to a receiver ID
     fn nft_transfer(
@@ -194,33 +196,35 @@ impl NonFungibleTokenCore for Contract {
     fn nft_token(&self, token_id: TokenId) -> Option<JsonToken> {
         //if there is some token ID in the tokens_by_id collection
         if let Some(token) = self.tokens_by_id.get(&token_id) {
-            //we'll get the metadata for that token
-            let metadata = self.token_data_by_id.get(&token_id).unwrap();
+            //we'll get the data and meta for that token
+            let metadata = self
+                .token_data_by_id
+                .get(&token_id)
+                .expect("metadata not found");
             //we return the JsonToken (wrapped by Some since we return an option)
-            Some(JsonToken {
+            return Some(JsonToken {
                 token_id,
                 owner_id: token.owner_id,
                 metadata: JsonMetadata {
                     title: Some(metadata.title),
-                    description: Some(metadata.description),
+                    description: Some(META_DESCRIPTION.to_string()),
                     media: Some(metadata.media),
                     media_hash: Some(metadata.media_hash),
-                    extra: Some(metadata.extra),
+                    extra: Some(metadata.attributes),
                     copies: Some(1),
-                    issued_at: Some(metadata.issued_at),
-                    updated_at: Some(metadata.issued_at),
+                    issued_at: Some(token.issued_at),
+                    updated_at: Some(token.issued_at),
                     expires_at: None,
                     starts_at: None,
                     reference: None,
                     reference_hash: None,
                 },
-                approved_account_ids: token.approved_account_ids,
                 royalty: token.royalty,
-            })
-        } else {
-            //if there wasn't a token ID in the tokens_by_id collection, we return None
-            None
+                approved_account_ids: token.approved_account_ids,
+            });
         }
+        //else return None, invalid token id
+        None
     }
 }
 

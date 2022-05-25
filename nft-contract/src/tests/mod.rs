@@ -3,6 +3,7 @@ use near_sdk::{testing_env, AccountId};
 
 use crate::*;
 
+const REG_COST: Balance = 4200000000000000000000;
 const MINT_COST: Balance = 6200000000000000000000;
 
 mod approval;
@@ -22,6 +23,23 @@ fn test_nft_approval_allow_access() {
 
     let mut contract = Contract::nft_init_default(acc_x.clone());
 
+    testing_env!(VMContextBuilder::new()
+        .predecessor_account_id(acc_x.clone())
+        .attached_deposit(REG_COST)
+        .is_view(false)
+        .build());
+    let mut map = HashMap::new();
+    map.insert(
+        tkn_a.clone(),
+        TokenMetadata {
+            title: tkn_a.clone(),
+            media: "bb".to_string(),
+            media_hash: "cc".to_string(),
+            attributes: "dd".to_string(),
+        },
+    );
+    contract.nft_register(map);
+
     // Test nft_allow_minting: pass
     testing_env!(VMContextBuilder::new()
         .predecessor_account_id(acc_x.clone())
@@ -36,19 +54,7 @@ fn test_nft_approval_allow_access() {
         .attached_deposit(MINT_COST)
         .is_view(false)
         .build());
-    contract.nft_mint(
-        tkn_a.clone(),
-        TokenMetadata {
-            title: tkn_a.clone(),
-            description: "aa".to_string(),
-            media: "bb".to_string(),
-            media_hash: "cc".to_string(),
-            extra: "dd".to_string(),
-            issued_at: 1,
-        },
-        acc_b.clone(),
-        None,
-    );
+    contract.nft_mint(tkn_a.clone(), acc_b.clone(), None);
 
     testing_env!(VMContextBuilder::new().is_view(true).build());
     let token = contract.nft_token(tkn_a.clone()).expect("must be set");
@@ -174,6 +180,23 @@ fn test_nft_transfer_panic_owner() {
 
     let mut contract = Contract::nft_init_default(acc_x.clone());
 
+    testing_env!(VMContextBuilder::new()
+        .predecessor_account_id(acc_x.clone())
+        .attached_deposit(REG_COST)
+        .is_view(false)
+        .build());
+    let mut map = HashMap::new();
+    map.insert(
+        tkn_a.clone(),
+        TokenMetadata {
+            title: tkn_a.clone(),
+            media: "bb".to_string(),
+            media_hash: "cc".to_string(),
+            attributes: "dd".to_string(),
+        },
+    );
+    contract.nft_register(map);
+
     // Approve interface
     testing_env!(VMContextBuilder::new()
         .predecessor_account_id(acc_x.clone())
@@ -187,19 +210,7 @@ fn test_nft_transfer_panic_owner() {
         .attached_deposit(MINT_COST)
         .is_view(false)
         .build());
-    contract.nft_mint(
-        tkn_a.clone(),
-        TokenMetadata {
-            title: tkn_a.clone(),
-            description: "aa".to_string(),
-            media: "bb".to_string(),
-            media_hash: "cc".to_string(),
-            extra: "dd".to_string(),
-            issued_at: 1,
-        },
-        acc_a.clone(),
-        None,
-    );
+    contract.nft_mint(tkn_a.clone(), acc_a.clone(), None);
 
     testing_env!(VMContextBuilder::new().is_view(true).build());
     let token = contract.nft_token(tkn_a.clone()).expect("must be set");

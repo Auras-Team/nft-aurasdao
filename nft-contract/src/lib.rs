@@ -109,9 +109,11 @@ impl Contract {
             allowed_list_mint: LookupMap::new(
                 StorageKey::ContractAllowListMint.try_to_vec().unwrap(),
             ),
-            tokens_per_owner: LookupMap::new(StorageKey::TokensPerOwner.try_to_vec().unwrap()),
+
             tokens_by_id: LookupMap::new(StorageKey::TokensById.try_to_vec().unwrap()),
             token_data_by_id: UnorderedMap::new(StorageKey::TokenDataById.try_to_vec().unwrap()),
+
+            tokens_per_owner: LookupMap::new(StorageKey::TokensPerOwner.try_to_vec().unwrap()),
         }
     }
 }

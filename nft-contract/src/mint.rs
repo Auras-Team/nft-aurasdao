@@ -2,16 +2,55 @@ use near_sdk::require;
 
 use crate::*;
 
+/***************/
+/* Pre Minting */
+/***************/
+
+#[near_bindgen]
+impl Contract {
+    #[payable]
+    pub fn nft_register(&mut self, token_list: HashMap<String, TokenMetadata>) {
+        //storage so we need at least one yocto
+        require_at_least_one_yocto();
+
+        //require the the sender is the owner of the contract
+        require!(
+            env::predecessor_account_id() == self.owner_id,
+            "Only owner is allow to register tokens",
+        );
+        //enforce the token supply cap
+        require!(
+            token_list.len() + (self.token_data_by_id.len() as usize) <= 1000,
+            "Max supply of 1000 tokens reached",
+        );
+
+        //measure the initial storage being used on the contract
+        let initial_storage_usage = env::storage_usage();
+
+        for (token_id, metadata) in &token_list {
+            require!(
+                self.token_data_by_id.insert(token_id, &metadata).is_none(),
+                "Token id is already registered"
+            );
+        }
+
+        //refund any excess storage if the owner attached too much. Panic when short.
+        refund_deposit(env::storage_usage() - initial_storage_usage);
+    }
+}
+
 #[near_bindgen]
 impl Contract {
     #[payable]
     pub fn nft_mint(
         &mut self,
         token_id: TokenId,
-        metadata: TokenMetadata,
         receiver_id: AccountId,
         perpetual_royalties: Option<HashMap<AccountId, u32>>,
     ) {
+        //storage so we need at least one yocto
+        require_at_least_one_yocto();
+
         let sender_id = env::predecessor_account_id();
 
         //ensure that the predecessor has minting access
@@ -20,6 +59,12 @@ impl Contract {
             .get(&sender_id)
             .expect("Account is not authorized to mint");
         require!(mint_count > 0, "Account has no mints remaining");
+
+        // Verify pre-mint registration of token id
+        require!(
+            self.token_data_by_id.get(&token_id).is_some(),
+            "Token id could not be found"
+        );
 
         //measure the initial storage being used on the contract
         let initial_storage_usage = env::storage_usage();
@@ -53,24 +98,17 @@ impl Contract {
 
         //specify the token struct that contains the owner ID
         let token = Token {
-            //set the owner ID equal to the receiver ID passed into the function
             owner_id: receiver_id,
-            //we set the approved account IDs to the default value (an empty map)
             approved_account_ids: Default::default(),
-            //the next approval ID is set to 0
             next_approval_id: 0,
-            //the map of perpetual royalties for the token (The owner will get 100% - total perpetual royalties)
             royalty,
+            issued_at: env::block_timestamp(),
         };
-
-        //insert the token ID and token struct and make sure that the token doesn't exist
+        //insert the token ID and token struct and make sure that it was not minted before.
         require!(
             self.tokens_by_id.insert(&token_id, &token).is_none(),
-            "Token id already exists"
+            "Token id already minted"
         );
-
-        //insert the token ID and metadata
-        self.token_data_by_id.insert(&token_id, &metadata);
 
         //call the internal method for adding the token to the owner
         self.internal_add_token_to_owner(&token.owner_id, &token_id);
