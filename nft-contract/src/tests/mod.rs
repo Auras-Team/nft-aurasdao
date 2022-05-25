@@ -54,7 +54,7 @@ fn test_nft_approval_allow_access() {
         .attached_deposit(MINT_COST)
         .is_view(false)
         .build());
-    contract.nft_mint(tkn_a.clone(), acc_b.clone(), None);
+    contract.nft_mint(tkn_a.clone(), acc_b.clone());
 
     testing_env!(VMContextBuilder::new().is_view(true).build());
     let token = contract.nft_token(tkn_a.clone()).expect("must be set");
@@ -210,7 +210,7 @@ fn test_nft_transfer_panic_owner() {
         .attached_deposit(MINT_COST)
         .is_view(false)
         .build());
-    contract.nft_mint(tkn_a.clone(), acc_a.clone(), None);
+    contract.nft_mint(tkn_a.clone(), acc_a.clone());
 
     testing_env!(VMContextBuilder::new().is_view(true).build());
     let token = contract.nft_token(tkn_a.clone()).expect("must be set");

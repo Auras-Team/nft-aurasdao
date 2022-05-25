@@ -88,7 +88,7 @@ fn test_nft_metadata_token() {
         .attached_deposit(7000000000000000000000)
         .is_view(false)
         .build());
-    contract.nft_mint(tkn_a.clone(), acc_a.clone(), None);
+    contract.nft_mint(tkn_a.clone(), acc_a.clone());
 
     testing_env!(VMContextBuilder::new().is_view(true).build());
     let data = contract.nft_token(tkn_a.clone()).expect("nust be set");

@@ -30,7 +30,7 @@ fn _mint_token(
         .attached_deposit(MINT_COST)
         .is_view(false)
         .build());
-    contract.nft_mint(token_id.clone(), owner_id.clone(), None);
+    contract.nft_mint(token_id.clone(), owner_id.clone());
 }
 
 #[test]
@@ -53,24 +53,6 @@ fn test_nft_approval() {
         .build());
     contract.nft_allow_minting(acc_x.clone(), 1);
     _mint_token(&mut contract, tkn_a.clone(), acc_a.clone(), acc_x.clone());
-
-    // testing_env!(VMContextBuilder::new()
-    //     .predecessor_account_id(acc_x.clone())
-    //     .attached_deposit(MINT_COST)
-    //     .is_view(false)
-    //     .build());
-    // contract.nft_mint(
-    //     tkn_a.clone(),
-    //     TokenMetadata {
-    //         title: tkn_a.clone(),
-    //         media: "bb".to_string(),
-    //         media_hash: "cc".to_string(),
-    //         attributes: "dd".to_string(),
-    //         issued_at: 1,
-    //     },
-    //     acc_a.clone(),
-    //     None,
-    // );
 
     testing_env!(VMContextBuilder::new().is_view(true).build());
     let token = contract.nft_token(tkn_a.clone()).expect("must be set");

@@ -29,7 +29,7 @@ fn _mint_token(
         .attached_deposit(MINT_COST)
         .is_view(false)
         .build());
-    contract.nft_mint(token_id.clone(), owner_id.clone(), None);
+    contract.nft_mint(token_id.clone(), owner_id.clone());
 }
 
 #[test]

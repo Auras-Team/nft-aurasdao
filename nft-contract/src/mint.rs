@@ -42,12 +42,7 @@ impl Contract {
 #[near_bindgen]
 impl Contract {
     #[payable]
-    pub fn nft_mint(
-        &mut self,
-        token_id: TokenId,
-        receiver_id: AccountId,
-        perpetual_royalties: Option<HashMap<AccountId, u32>>,
-    ) {
+    pub fn nft_mint(&mut self, token_id: TokenId, receiver_id: AccountId) {
         //storage so we need at least one yocto
         require_at_least_one_yocto();
 
@@ -69,39 +64,11 @@ impl Contract {
         //measure the initial storage being used on the contract
         let initial_storage_usage = env::storage_usage();
 
-        //create a royalty map to store in the token
-        let mut royalty = HashMap::new();
-
-        //if perpetual royalties were passed into the function:
-        if let Some(perpetual_royalties) = perpetual_royalties {
-            //make sure that the length of the perpetual royalties is below 7 since we won't have enough GAS to pay out that many people
-            require!(
-                perpetual_royalties.len() < 7,
-                "Cannot add more than 6 perpetual royalty amounts"
-            );
-
-            //used to verify that total is not larger then 10000
-            let mut total_amount: u32 = 0;
-
-            //iterate through the perpetual royalties and insert the account and amount in the royalty map
-            for (account, amount) in perpetual_royalties {
-                royalty.insert(account, amount);
-                total_amount += amount;
-            }
-
-            //verify max base points to set 100.00 percentage values
-            require!(
-                total_amount <= 10000,
-                "Total royalty shares can not be more then 10000 base points"
-            );
-        }
-
         //specify the token struct that contains the owner ID
         let token = Token {
             owner_id: receiver_id,
             approved_account_ids: Default::default(),
             next_approval_id: 0,
-            royalty,
             issued_at: env::block_timestamp(),
         };
         //insert the token ID and token struct and make sure that it was not minted before.

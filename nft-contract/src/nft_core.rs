@@ -201,6 +201,10 @@ impl NonFungibleTokenCore for Contract {
                 .token_data_by_id
                 .get(&token_id)
                 .expect("metadata not found");
+
+            let mut royalty_map = HashMap::new();
+            royalty_map.insert(self.owner_id.clone(), MANAGER_ROYALTY);
+
             //we return the JsonToken (wrapped by Some since we return an option)
             return Some(JsonToken {
                 token_id,
@@ -219,7 +223,7 @@ impl NonFungibleTokenCore for Contract {
                     reference: None,
                     reference_hash: None,
                 },
-                royalty: token.royalty,
+                royalty: royalty_map,
                 approved_account_ids: token.approved_account_ids,
             });
         }
