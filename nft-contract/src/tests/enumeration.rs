@@ -26,7 +26,7 @@ fn _mint_token(
     contract.nft_register(map);
     testing_env!(VMContextBuilder::new()
         .predecessor_account_id(creator_id.clone())
-        .attached_deposit(MINT_COST)
+        .attached_deposit(ONE_NEAR * 22)
         .is_view(false)
         .build());
     contract.nft_mint(token_id.clone(), owner_id.clone());

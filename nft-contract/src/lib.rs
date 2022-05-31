@@ -4,7 +4,7 @@ use near_sdk::json_types::U128;
 use near_sdk::serde::{Deserialize, Serialize};
 use near_sdk::{
     env, near_bindgen, require, AccountId, Balance, CryptoHash, PanicOnDefault, Promise,
-    PromiseOrValue,
+    PromiseOrValue, ONE_NEAR,
 };
 use std::collections::HashMap;
 
@@ -39,11 +39,14 @@ pub struct Contract {
     //keeps track of the metadata for the contract
     pub metadata: LazyOption<ContractMetadata>,
 
+    //cost of minting a token
+    pub mint_state: LazyOption<MintInfo>,
+
     //keeps track of the token struct for a given token ID
     pub tokens_by_id: LookupMap<TokenId, Token>,
 
     //keep track of accounts and amount that can be minted
-    pub allowed_list_mint: LookupMap<AccountId, u64>,
+    pub mint_state_list: LookupMap<AccountId, MintState>,
 
     //keeps track of the token metadata for a given token ID
     pub token_data_by_id: UnorderedMap<TokenId, TokenMetadata>,
@@ -56,6 +59,7 @@ pub struct Contract {
 #[derive(BorshSerialize)]
 pub enum StorageKey {
     ContractMetadata,
+    ContractMintState,
     ContractAllowListMint,
 
     TokensById,
@@ -79,6 +83,11 @@ impl Contract {
     pub fn nft_init_default(owner_id: AccountId) -> Self {
         Self::nft_init(
             owner_id,
+            MintInfo {
+                limit: 5,
+                public: 0,
+                listed: 22,
+            },
             ContractMetadata {
                 spec: "nft-2.0.0".to_string(),
                 name: "Auras".to_string(),
@@ -96,7 +105,7 @@ impl Contract {
         this initializes the contract with metadata and owner_id.
     */
     #[init]
-    pub fn nft_init(owner_id: AccountId, metadata: ContractMetadata) -> Self {
+    pub fn nft_init(owner_id: AccountId, state: MintInfo, metadata: ContractMetadata) -> Self {
         // Initialize data and return it
         Self {
             //Set the contract data fields equal to the passed in owner_id.
@@ -105,8 +114,12 @@ impl Contract {
                 StorageKey::ContractMetadata.try_to_vec().unwrap(),
                 Some(&metadata),
             ),
+            mint_state: LazyOption::new(
+                StorageKey::ContractMintState.try_to_vec().unwrap(),
+                Some(&state),
+            ),
             //Storage keys are simply the prefixes used for storage to avoid data collision.
-            allowed_list_mint: LookupMap::new(
+            mint_state_list: LookupMap::new(
                 StorageKey::ContractAllowListMint.try_to_vec().unwrap(),
             ),
 
@@ -115,6 +128,29 @@ impl Contract {
 
             tokens_per_owner: LookupMap::new(StorageKey::TokensPerOwner.try_to_vec().unwrap()),
         }
+    }
+}
+
+/******************/
+/* Minting State */
+/******************/
+
+#[near_bindgen]
+impl Contract {
+    pub fn nft_mint_info(&self) -> MintInfo {
+        self.mint_state.get().unwrap()
+    }
+
+    #[payable]
+    pub fn nft_set_mint_info(&mut self, info: MintInfo) {
+        //require that the owner attached 1 yoctoNEAR for security reasons
+        require_one_yocto();
+        //require the the sender is the owner of the contract
+        require!(
+            env::predecessor_account_id() == self.owner_id,
+            "Only owner can set minting state",
+        );
+        self.mint_state.set(&info);
     }
 }
 
@@ -134,7 +170,13 @@ impl Contract {
             "Only owner can allow minting access",
         );
         //insert the account and the limit to the minting whitelist
-        self.allowed_list_mint.insert(&account_id, &amount);
+        self.mint_state_list.insert(
+            &account_id,
+            &MintState {
+                limit: amount,
+                listed: true,
+            },
+        );
     }
 
     #[payable]
@@ -147,7 +189,7 @@ impl Contract {
             "Only owner can revoke minting access",
         );
         //remove the account to the minting whitelist
-        self.allowed_list_mint.remove(&account_id);
+        self.mint_state_list.remove(&account_id);
     }
 }
 

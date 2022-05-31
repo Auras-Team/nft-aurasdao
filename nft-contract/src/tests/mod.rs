@@ -4,7 +4,6 @@ use near_sdk::{testing_env, AccountId};
 use crate::*;
 
 const REG_COST: Balance = 4200000000000000000000;
-const MINT_COST: Balance = 6200000000000000000000;
 
 mod approval;
 mod enumeration;
@@ -51,7 +50,7 @@ fn test_nft_approval_allow_access() {
     // Test nft_allow_minting: check
     testing_env!(VMContextBuilder::new()
         .predecessor_account_id(acc_a.clone())
-        .attached_deposit(MINT_COST)
+        .attached_deposit(ONE_NEAR * 22)
         .is_view(false)
         .build());
     contract.nft_mint(tkn_a.clone(), acc_b.clone());
@@ -64,6 +63,26 @@ fn test_nft_approval_allow_access() {
 /***************/
 /* Token Yocto */
 /***************/
+
+#[test]
+#[should_panic(expected = "Requires attached deposit of exactly 1 yoctoNEAR")]
+fn test_nft_set_mint_state_panic_yocto() {
+    let acc_x = AccountId::new_unchecked(String::from("account.x"));
+
+    let mut contract = Contract::nft_init_default(acc_x.clone());
+
+    // Test nft_allow_minting: access error
+    testing_env!(VMContextBuilder::new()
+        .predecessor_account_id(acc_x.clone())
+        .attached_deposit(0)
+        .is_view(false)
+        .build());
+    contract.nft_set_mint_info(MintInfo {
+        limit: 1,
+        public: 2,
+        listed: 3,
+    });
+}
 
 #[test]
 #[should_panic(expected = "Requires attached deposit of exactly 1 yoctoNEAR")]
@@ -102,6 +121,27 @@ fn test_nft_revoke_minting_panic_yocto() {
 /*********************/
 /* Access Owner Only */
 /*********************/
+
+#[test]
+#[should_panic(expected = "Only owner can set minting state")]
+fn test_nft_set_mint_state_panic_access() {
+    let acc_a = AccountId::new_unchecked(String::from("account.a"));
+    let acc_x = AccountId::new_unchecked(String::from("account.x"));
+
+    let mut contract = Contract::nft_init_default(acc_x.clone());
+
+    // Test nft_allow_minting: access error
+    testing_env!(VMContextBuilder::new()
+        .predecessor_account_id(acc_a.clone())
+        .attached_deposit(1)
+        .is_view(false)
+        .build());
+    contract.nft_set_mint_info(MintInfo {
+        limit: 1,
+        public: 2,
+        listed: 3,
+    });
+}
 
 #[test]
 #[should_panic(expected = "Only owner can allow minting access")]
@@ -207,7 +247,7 @@ fn test_nft_transfer_panic_owner() {
 
     testing_env!(VMContextBuilder::new()
         .predecessor_account_id(acc_x.clone())
-        .attached_deposit(MINT_COST)
+        .attached_deposit(ONE_NEAR * 22)
         .is_view(false)
         .build());
     contract.nft_mint(tkn_a.clone(), acc_a.clone());

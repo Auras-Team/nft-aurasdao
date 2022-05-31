@@ -48,21 +48,48 @@ impl Contract {
 
         let sender_id = env::predecessor_account_id();
 
-        //ensure that the predecessor has minting access
-        let mint_count = self
-            .allowed_list_mint
-            .get(&sender_id)
-            .expect("Account is not authorized to mint");
-        require!(mint_count > 0, "Account has no mints remaining");
+        //ensure that the predecessor can mint tokens
+        let mint_info = self.mint_state.get().expect("Minting is disabled");
+
+        // if public price > get account limit or create
+        // if no public price > get whitelist limit or error
+        let mint_state = match mint_info.public {
+            0 => self
+                .mint_state_list
+                .get(&sender_id)
+                .expect("Account is not authorized to mint"),
+            _ => self.mint_state_list.get(&sender_id).unwrap_or(MintState {
+                limit: mint_info.limit,
+                listed: false,
+            }),
+        };
+
+        // If the account reachedes zero it is no longer allowed to mint
+        require!(mint_state.limit > 0, "Account has reached minting limit");
+
+        // Verify atached deposit is amount needed to mint
+        match mint_state.listed {
+            true => require!(
+                env::attached_deposit() >= ONE_NEAR * mint_info.listed,
+                format!(
+                    "Insufishend deposit, minting cost is {} near",
+                    mint_info.listed
+                )
+            ),
+            false => require!(
+                env::attached_deposit() >= ONE_NEAR * mint_info.public,
+                format!(
+                    "Insufishend deposit, minting cost is {} near",
+                    mint_info.public
+                )
+            ),
+        }
 
         // Verify pre-mint registration of token id
         require!(
             self.token_data_by_id.get(&token_id).is_some(),
             "Token id could not be found"
         );
-
-        //measure the initial storage being used on the contract
-        let initial_storage_usage = env::storage_usage();
 
         //specify the token struct that contains the owner ID
         let token = Token {
@@ -101,12 +128,12 @@ impl Contract {
         env::log_str(&nft_mint_log.to_string());
 
         //update the mint counter for the senders account
-        self.allowed_list_mint.insert(&sender_id, &(mint_count - 1));
-
-        //calculate the required storage which was the used - initial
-        let required_storage_in_bytes = env::storage_usage() - initial_storage_usage;
-
-        //refund any excess storage if the user attached too much. Panic if they didn't attach enough to cover the required.
-        refund_deposit(required_storage_in_bytes);
+        self.mint_state_list.insert(
+            &sender_id,
+            &MintState {
+                limit: mint_state.limit - 1,
+                listed: mint_state.listed,
+            },
+        );
     }
 }

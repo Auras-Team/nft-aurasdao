@@ -6,6 +6,12 @@ use crate::metadata::NftMetadata;
 fn test_nft_metadata_contract() {
     let acc_x = AccountId::new_unchecked(String::from("account.x"));
 
+    let mintstate = MintInfo {
+        limit: 5,
+        public: 0,
+        listed: 42 * ONE_NEAR,
+    };
+
     let metadata = ContractMetadata {
         spec: "nft-1.0.0".to_string(),
         name: "AA".to_string(),
@@ -16,7 +22,7 @@ fn test_nft_metadata_contract() {
         reference_hash: Some("FF".to_string()),
     };
 
-    let contract = Contract::nft_init(acc_x.clone(), metadata.clone());
+    let contract = Contract::nft_init(acc_x.clone(), mintstate.clone(), metadata.clone());
     let data = contract.nft_metadata();
 
     // Note: this values are hard coded in to Contract::new
@@ -85,7 +91,7 @@ fn test_nft_metadata_token() {
 
     testing_env!(VMContextBuilder::new()
         .predecessor_account_id(acc_x.clone())
-        .attached_deposit(7000000000000000000000)
+        .attached_deposit(ONE_NEAR * 42)
         .is_view(false)
         .build());
     contract.nft_mint(tkn_a.clone(), acc_a.clone());
