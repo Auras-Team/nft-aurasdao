@@ -1,10 +1,10 @@
 'use strict';
 
-const TOKEN_IMG_URL = "cdn.aurasdao.com/tokens/v1"
+const TOKEN_IMG_URL = "cdn.aurasdao.com/tokens/v1/base"
 
-var fs = require('fs');
-var crypto = require("crypto");
+const fs = require('fs');
 const path = require('path');
+const crypto = require("crypto");
 
 var count = 0;
 var walkPath = './solana_metadata';
