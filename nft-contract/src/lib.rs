@@ -40,7 +40,7 @@ pub struct Contract {
     pub metadata: LazyOption<ContractMetadata>,
 
     //cost of minting a token
-    pub mint_state: LazyOption<MintInfo>,
+    pub mint_info: LazyOption<MintInfo>,
 
     //keeps track of the token struct for a given token ID
     pub tokens_by_id: LookupMap<TokenId, Token>,
@@ -80,8 +80,8 @@ impl Contract {
         this initializes the contract with defaults and owner_id.
     */
     #[init]
-    pub fn nft_init_default(owner_id: AccountId) -> Self {
-        Self::nft_init(
+    pub fn ctrl_init_default(owner_id: AccountId) -> Self {
+        Self::ctrl_init(
             owner_id,
             MintInfo {
                 limit: 5,
@@ -105,7 +105,7 @@ impl Contract {
         this initializes the contract with metadata and owner_id.
     */
     #[init]
-    pub fn nft_init(owner_id: AccountId, state: MintInfo, metadata: ContractMetadata) -> Self {
+    pub fn ctrl_init(owner_id: AccountId, info: MintInfo, metadata: ContractMetadata) -> Self {
         // Initialize data and return it
         Self {
             //Set the contract data fields equal to the passed in owner_id.
@@ -114,9 +114,9 @@ impl Contract {
                 StorageKey::ContractMetadata.try_to_vec().unwrap(),
                 Some(&metadata),
             ),
-            mint_state: LazyOption::new(
+            mint_info: LazyOption::new(
                 StorageKey::ContractMintState.try_to_vec().unwrap(),
-                Some(&state),
+                Some(&info),
             ),
             //Storage keys are simply the prefixes used for storage to avoid data collision.
             mint_state_list: LookupMap::new(
@@ -138,7 +138,7 @@ impl Contract {
 #[near_bindgen]
 impl Contract {
     pub fn nft_mint_info(&self) -> MintInfo {
-        self.mint_state.get().unwrap()
+        self.mint_info.get().unwrap()
     }
 
     #[payable]
@@ -148,9 +148,9 @@ impl Contract {
         //require the the sender is the owner of the contract
         require!(
             env::predecessor_account_id() == self.owner_id,
-            "Only owner can set minting state",
+            "Only owner can set mint info",
         );
-        self.mint_state.set(&info);
+        self.mint_info.set(&info);
     }
 }
 
@@ -161,7 +161,7 @@ impl Contract {
 #[near_bindgen]
 impl Contract {
     #[payable]
-    pub fn nft_allow_minting(&mut self, account_id: AccountId, amount: u64) {
+    pub fn nft_allow_minting(&mut self, account_id: AccountId, amount: u32) {
         //require that the owner attached 1 yoctoNEAR for security reasons
         require_one_yocto();
         //require the the sender is the owner of the contract
@@ -190,6 +190,37 @@ impl Contract {
         );
         //remove the account to the minting whitelist
         self.mint_state_list.remove(&account_id);
+    }
+}
+
+/*******************/
+/* Near Withdrawal */
+/*******************/
+
+#[near_bindgen]
+impl Contract {
+    pub fn ctrl_owner(&self) -> AccountId {
+        self.owner_id.clone()
+    }
+
+    pub fn ctrl_storage_cost(&self) -> U128 {
+        U128::from(u128::from(env::storage_usage()) * env::storage_byte_cost())
+    }
+
+    pub fn ctrl_storage_usage(&self) -> u64 {
+        env::storage_usage()
+    }
+
+    #[payable]
+    pub fn ctrl_withdrawal(&mut self, amount: U128) {
+        //require that the owner attached 1 yoctoNEAR for security reasons
+        require_one_yocto();
+        //require the the sender is the owner of the contract
+        require!(
+            env::predecessor_account_id() == self.owner_id,
+            "Only owner can withdrawal funds",
+        );
+        Promise::new(env::predecessor_account_id()).transfer(u128::from(amount));
     }
 }
 

@@ -45,7 +45,7 @@ fn test_nft_enumeration() {
     let acc_c = AccountId::new_unchecked(String::from("account.c"));
     let acc_x = AccountId::new_unchecked(String::from("account.x"));
 
-    let mut contract = Contract::nft_init_default(acc_x.clone());
+    let mut contract = Contract::ctrl_init_default(acc_x.clone());
 
     testing_env!(VMContextBuilder::new()
         .predecessor_account_id(acc_x.clone())

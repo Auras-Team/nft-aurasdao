@@ -20,7 +20,7 @@ fn test_nft_approval_allow_access() {
     let acc_b = AccountId::new_unchecked(String::from("account.b"));
     let acc_x = AccountId::new_unchecked(String::from("account.x"));
 
-    let mut contract = Contract::nft_init_default(acc_x.clone());
+    let mut contract = Contract::ctrl_init_default(acc_x.clone());
 
     testing_env!(VMContextBuilder::new()
         .predecessor_account_id(acc_x.clone())
@@ -69,7 +69,7 @@ fn test_nft_approval_allow_access() {
 fn test_nft_set_mint_state_panic_yocto() {
     let acc_x = AccountId::new_unchecked(String::from("account.x"));
 
-    let mut contract = Contract::nft_init_default(acc_x.clone());
+    let mut contract = Contract::ctrl_init_default(acc_x.clone());
 
     // Test nft_allow_minting: access error
     testing_env!(VMContextBuilder::new()
@@ -90,7 +90,7 @@ fn test_nft_allow_minting_panic_yocto() {
     let acc_b = AccountId::new_unchecked(String::from("account.b"));
     let acc_x = AccountId::new_unchecked(String::from("account.x"));
 
-    let mut contract = Contract::nft_init_default(acc_x.clone());
+    let mut contract = Contract::ctrl_init_default(acc_x.clone());
 
     // Test nft_allow_minting: access error
     testing_env!(VMContextBuilder::new()
@@ -107,7 +107,7 @@ fn test_nft_revoke_minting_panic_yocto() {
     let acc_b = AccountId::new_unchecked(String::from("account.b"));
     let acc_x = AccountId::new_unchecked(String::from("account.x"));
 
-    let mut contract = Contract::nft_init_default(acc_x.clone());
+    let mut contract = Contract::ctrl_init_default(acc_x.clone());
 
     // Test nft_revoke_minting: access error
     testing_env!(VMContextBuilder::new()
@@ -123,12 +123,12 @@ fn test_nft_revoke_minting_panic_yocto() {
 /*********************/
 
 #[test]
-#[should_panic(expected = "Only owner can set minting state")]
+#[should_panic(expected = "Only owner can set mint info")]
 fn test_nft_set_mint_state_panic_access() {
     let acc_a = AccountId::new_unchecked(String::from("account.a"));
     let acc_x = AccountId::new_unchecked(String::from("account.x"));
 
-    let mut contract = Contract::nft_init_default(acc_x.clone());
+    let mut contract = Contract::ctrl_init_default(acc_x.clone());
 
     // Test nft_allow_minting: access error
     testing_env!(VMContextBuilder::new()
@@ -150,7 +150,7 @@ fn test_nft_allow_minting_panic_access() {
     let acc_b = AccountId::new_unchecked(String::from("account.b"));
     let acc_x = AccountId::new_unchecked(String::from("account.x"));
 
-    let mut contract = Contract::nft_init_default(acc_x.clone());
+    let mut contract = Contract::ctrl_init_default(acc_x.clone());
 
     // Test nft_allow_minting: access error
     testing_env!(VMContextBuilder::new()
@@ -168,7 +168,7 @@ fn test_nft_revoke_minting_panic_access() {
     let acc_b = AccountId::new_unchecked(String::from("account.b"));
     let acc_x = AccountId::new_unchecked(String::from("account.x"));
 
-    let mut contract = Contract::nft_init_default(acc_x.clone());
+    let mut contract = Contract::ctrl_init_default(acc_x.clone());
 
     // Test nft_revoke_minting: access error
     testing_env!(VMContextBuilder::new()
@@ -177,6 +177,23 @@ fn test_nft_revoke_minting_panic_access() {
         .is_view(false)
         .build());
     contract.nft_revoke_minting(acc_b.clone());
+}
+
+#[test]
+#[should_panic(expected = "Only owner can withdrawal funds")]
+fn test_ctrl_withdrawal_panic_access() {
+    let acc_a = AccountId::new_unchecked(String::from("account.a"));
+    let acc_x = AccountId::new_unchecked(String::from("account.x"));
+
+    let mut contract = Contract::ctrl_init_default(acc_x.clone());
+
+    // Test nft_revoke_minting: access error
+    testing_env!(VMContextBuilder::new()
+        .predecessor_account_id(acc_a.clone())
+        .attached_deposit(1)
+        .is_view(false)
+        .build());
+    contract.ctrl_withdrawal(U128::from(5));
 }
 
 /******************/
@@ -191,7 +208,7 @@ fn test_nft_transfer_panic_token() {
     let acc_a = AccountId::new_unchecked(String::from("account.a"));
     let acc_x = AccountId::new_unchecked(String::from("account.x"));
 
-    let mut contract = Contract::nft_init_default(acc_x.clone());
+    let mut contract = Contract::ctrl_init_default(acc_x.clone());
 
     // Approve interface
     testing_env!(VMContextBuilder::new()
@@ -218,7 +235,7 @@ fn test_nft_transfer_panic_owner() {
     let acc_a = AccountId::new_unchecked(String::from("account.a"));
     let acc_x = AccountId::new_unchecked(String::from("account.x"));
 
-    let mut contract = Contract::nft_init_default(acc_x.clone());
+    let mut contract = Contract::ctrl_init_default(acc_x.clone());
 
     testing_env!(VMContextBuilder::new()
         .predecessor_account_id(acc_x.clone())

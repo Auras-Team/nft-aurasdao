@@ -9,7 +9,7 @@ fn test_nft_metadata_contract() {
     let mintstate = MintInfo {
         limit: 5,
         public: 0,
-        listed: 42 * ONE_NEAR,
+        listed: 42,
     };
 
     let metadata = ContractMetadata {
@@ -22,7 +22,7 @@ fn test_nft_metadata_contract() {
         reference_hash: Some("FF".to_string()),
     };
 
-    let contract = Contract::nft_init(acc_x.clone(), mintstate.clone(), metadata.clone());
+    let contract = Contract::ctrl_init(acc_x.clone(), mintstate.clone(), metadata.clone());
     let data = contract.nft_metadata();
 
     // Note: this values are hard coded in to Contract::new
@@ -41,7 +41,7 @@ fn test_nft_metadata_contract() {
 fn test_nft_metadata_contract_default() {
     let acc_x = AccountId::new_unchecked(String::from("account.x"));
 
-    let contract = Contract::nft_init_default(acc_x.clone());
+    let contract = Contract::ctrl_init_default(acc_x.clone());
     let data = contract.nft_metadata();
 
     // Note: this values are hard coded in to Contract::new
@@ -63,7 +63,7 @@ fn test_nft_metadata_token() {
     let acc_a = AccountId::new_unchecked(String::from("account.a"));
     let acc_x = AccountId::new_unchecked(String::from("account.x"));
 
-    let mut contract = Contract::nft_init_default(acc_x.clone());
+    let mut contract = Contract::ctrl_init_default(acc_x.clone());
 
     testing_env!(VMContextBuilder::new()
         .predecessor_account_id(acc_x.clone())

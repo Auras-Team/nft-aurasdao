@@ -41,7 +41,7 @@ fn test_nft_mint() {
     let acc_a = AccountId::new_unchecked(String::from("account.a"));
     let acc_x = AccountId::new_unchecked(String::from("account.x"));
 
-    let mut contract = Contract::nft_init_default(acc_x.clone());
+    let mut contract = Contract::ctrl_init_default(acc_x.clone());
 
     testing_env!(VMContextBuilder::new()
         .predecessor_account_id(acc_x.clone())
@@ -53,14 +53,14 @@ fn test_nft_mint() {
 }
 
 #[test]
-#[should_panic(expected = "Insufishend deposit, minting cost is 22 near")]
+#[should_panic(expected = "Invalid deposit, minting cost is 22 near")]
 fn test_nft_mint_panic_list_cost() {
     let tkn_a = String::from("token.xyz");
 
     let acc_a = AccountId::new_unchecked(String::from("account.a"));
     let acc_x = AccountId::new_unchecked(String::from("account.x"));
 
-    let mut contract = Contract::nft_init_default(acc_x.clone());
+    let mut contract = Contract::ctrl_init_default(acc_x.clone());
 
     testing_env!(VMContextBuilder::new()
         .predecessor_account_id(acc_x.clone())
@@ -95,14 +95,14 @@ fn test_nft_mint_panic_list_cost() {
 }
 
 #[test]
-#[should_panic(expected = "Insufishend deposit, minting cost is 30 near")]
+#[should_panic(expected = "Invalid deposit, minting cost is 30 near")]
 fn test_nft_mint_panic_public_cost() {
     let tkn_a = String::from("token.xyz");
 
     let acc_a = AccountId::new_unchecked(String::from("account.a"));
     let acc_x = AccountId::new_unchecked(String::from("account.x"));
 
-    let mut contract = Contract::nft_init_default(acc_x.clone());
+    let mut contract = Contract::ctrl_init_default(acc_x.clone());
 
     testing_env!(VMContextBuilder::new()
         .predecessor_account_id(acc_x.clone())
@@ -148,7 +148,7 @@ fn test_nft_mint_panic_token_id() {
     let acc_a = AccountId::new_unchecked(String::from("account.a"));
     let acc_x = AccountId::new_unchecked(String::from("account.x"));
 
-    let mut contract = Contract::nft_init_default(acc_x.clone());
+    let mut contract = Contract::ctrl_init_default(acc_x.clone());
 
     testing_env!(VMContextBuilder::new()
         .predecessor_account_id(acc_x.clone())
@@ -195,7 +195,7 @@ fn test_nft_mint_panic_access() {
     let acc_a = AccountId::new_unchecked(String::from("account.a"));
     let acc_x = AccountId::new_unchecked(String::from("account.x"));
 
-    let mut contract = Contract::nft_init_default(acc_x.clone());
+    let mut contract = Contract::ctrl_init_default(acc_x.clone());
 
     testing_env!(VMContextBuilder::new()
         .predecessor_account_id(acc_x.clone())
@@ -237,7 +237,7 @@ fn test_nft_mint_panic_id_not_found() {
     let acc_a = AccountId::new_unchecked(String::from("account.a"));
     let acc_x = AccountId::new_unchecked(String::from("account.x"));
 
-    let mut contract = Contract::nft_init_default(acc_x.clone());
+    let mut contract = Contract::ctrl_init_default(acc_x.clone());
 
     testing_env!(VMContextBuilder::new()
         .predecessor_account_id(acc_x.clone())
@@ -261,7 +261,7 @@ fn test_nft_register_panic_cost() {
 
     let acc_x = AccountId::new_unchecked(String::from("account.x"));
 
-    let mut contract = Contract::nft_init_default(acc_x.clone());
+    let mut contract = Contract::ctrl_init_default(acc_x.clone());
 
     testing_env!(VMContextBuilder::new()
         .predecessor_account_id(acc_x.clone())
@@ -288,7 +288,7 @@ fn test_nft_register_panic_id_used() {
 
     let acc_x = AccountId::new_unchecked(String::from("account.x"));
 
-    let mut contract = Contract::nft_init_default(acc_x.clone());
+    let mut contract = Contract::ctrl_init_default(acc_x.clone());
 
     testing_env!(VMContextBuilder::new()
         .predecessor_account_id(acc_x.clone())
@@ -322,7 +322,7 @@ fn test_nft_mint_panic_amount() {
     let acc_a = AccountId::new_unchecked(String::from("account.a"));
     let acc_x = AccountId::new_unchecked(String::from("account.x"));
 
-    let mut contract = Contract::nft_init_default(acc_x.clone());
+    let mut contract = Contract::ctrl_init_default(acc_x.clone());
 
     testing_env!(VMContextBuilder::new()
         .predecessor_account_id(acc_x.clone())
@@ -375,7 +375,7 @@ fn test_nft_mint_panic_mint_limit() {
     let acc_a = AccountId::new_unchecked(String::from("account.a"));
     let acc_x = AccountId::new_unchecked(String::from("account.x"));
 
-    let mut contract = Contract::nft_init_default(acc_x.clone());
+    let mut contract = Contract::ctrl_init_default(acc_x.clone());
 
     testing_env!(VMContextBuilder::new()
         .predecessor_account_id(acc_x.clone())
@@ -431,7 +431,7 @@ fn test_nft_mint_panic_mint_disabled() {
     let acc_a = AccountId::new_unchecked(String::from("account.a"));
     let acc_x = AccountId::new_unchecked(String::from("account.x"));
 
-    let mut contract = Contract::nft_init_default(acc_x.clone());
+    let mut contract = Contract::ctrl_init_default(acc_x.clone());
 
     testing_env!(VMContextBuilder::new()
         .predecessor_account_id(acc_x.clone())

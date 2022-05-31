@@ -11,15 +11,15 @@ pub struct Payout {
 #[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize, Clone)]
 #[serde(crate = "near_sdk::serde")]
 pub struct MintInfo {
-    pub limit: u64,
-    pub public: Balance,
-    pub listed: Balance,
+    pub limit: u32,
+    pub public: u16,
+    pub listed: u16,
 }
 
 #[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize, Clone)]
 #[serde(crate = "near_sdk::serde")]
 pub struct MintState {
-    pub limit: u64,
+    pub limit: u32,
     pub listed: bool,
 }
 

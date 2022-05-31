@@ -49,7 +49,7 @@ impl Contract {
         let sender_id = env::predecessor_account_id();
 
         //ensure that the predecessor can mint tokens
-        let mint_info = self.mint_state.get().expect("Minting is disabled");
+        let mint_info = self.mint_info.get().expect("Mint info not found");
 
         // if public price > get account limit or create
         // if no public price > get whitelist limit or error
@@ -70,18 +70,12 @@ impl Contract {
         // Verify atached deposit is amount needed to mint
         match mint_state.listed {
             true => require!(
-                env::attached_deposit() >= ONE_NEAR * mint_info.listed,
-                format!(
-                    "Insufishend deposit, minting cost is {} near",
-                    mint_info.listed
-                )
+                env::attached_deposit() >= ONE_NEAR * u128::from(mint_info.listed),
+                format!("Invalid deposit, minting cost is {} near", mint_info.listed)
             ),
             false => require!(
-                env::attached_deposit() >= ONE_NEAR * mint_info.public,
-                format!(
-                    "Insufishend deposit, minting cost is {} near",
-                    mint_info.public
-                )
+                env::attached_deposit() >= ONE_NEAR * u128::from(mint_info.public),
+                format!("Invalid deposit, minting cost is {} near", mint_info.public)
             ),
         }
 

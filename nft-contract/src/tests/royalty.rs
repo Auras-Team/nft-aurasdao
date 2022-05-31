@@ -10,7 +10,7 @@ fn test_nft_royalty() {
     let acc_b = AccountId::new_unchecked(String::from("account.b"));
     let acc_x = AccountId::new_unchecked(String::from("account.x"));
 
-    let mut contract = Contract::nft_init_default(acc_x.clone());
+    let mut contract = Contract::ctrl_init_default(acc_x.clone());
 
     testing_env!(VMContextBuilder::new()
         .predecessor_account_id(acc_x.clone())
@@ -87,7 +87,7 @@ fn test_nft_payouts_panic_token() {
 
     let acc_x = AccountId::new_unchecked(String::from("account.x"));
 
-    let contract = Contract::nft_init_default(acc_x.clone());
+    let contract = Contract::ctrl_init_default(acc_x.clone());
 
     // Check the token info
     testing_env!(VMContextBuilder::new().is_view(true).build());
@@ -104,7 +104,7 @@ fn test_nft_payouts_panic_count() {
     let acc_a = AccountId::new_unchecked(String::from("account.a"));
     let acc_x = AccountId::new_unchecked(String::from("account.x"));
 
-    let mut contract = Contract::nft_init_default(acc_x.clone());
+    let mut contract = Contract::ctrl_init_default(acc_x.clone());
 
     testing_env!(VMContextBuilder::new()
         .predecessor_account_id(acc_x.clone())
@@ -155,7 +155,7 @@ fn test_nft_transfer_payouts_panic_count() {
     let acc_b = AccountId::new_unchecked(String::from("account.b"));
     let acc_x = AccountId::new_unchecked(String::from("account.x"));
 
-    let mut contract = Contract::nft_init_default(acc_x.clone());
+    let mut contract = Contract::ctrl_init_default(acc_x.clone());
 
     testing_env!(VMContextBuilder::new()
         .predecessor_account_id(acc_x.clone())
