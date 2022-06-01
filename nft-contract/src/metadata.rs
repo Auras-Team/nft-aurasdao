@@ -56,6 +56,16 @@ pub struct Token {
     pub approved_account_ids: HashMap<AccountId, u64>,
 }
 
+//The Json returns the mint state for an account is what will be returned from view calls.
+#[derive(Serialize, Deserialize)]
+#[serde(crate = "near_sdk::serde")]
+pub struct JsonMintState {
+    pub cost: u16,
+    pub limit: u32,
+    pub count: u64,
+    pub tokens: Vec<JsonToken>,
+}
+
 //The Json token is what will be returned from view calls.
 #[derive(Serialize, Deserialize)]
 #[serde(crate = "near_sdk::serde")]

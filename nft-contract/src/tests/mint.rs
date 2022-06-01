@@ -468,3 +468,150 @@ fn test_nft_mint_panic_mint_disabled() {
         .build());
     contract.nft_mint(tkn_a.clone(), acc_a.clone());
 }
+
+/************************/
+/* Minting Enumeration  */
+/************************/
+
+#[test]
+fn test_nft_mint_state() {
+    let tkn_a = String::from("token.a");
+    let tkn_b = String::from("token.b");
+    let tkn_c = String::from("token.c");
+    let tkn_d = String::from("token.d");
+    let tkn_e = String::from("token.e");
+
+    let acc_a = AccountId::new_unchecked(String::from("account.a"));
+    let acc_b = AccountId::new_unchecked(String::from("account.b"));
+    let acc_x = AccountId::new_unchecked(String::from("account.x"));
+
+    let mut contract = Contract::ctrl_init_default(acc_x.clone());
+
+    testing_env!(VMContextBuilder::new()
+        .predecessor_account_id(acc_x.clone())
+        .attached_deposit(REG_COST * 5)
+        .is_view(false)
+        .build());
+    let mut map = HashMap::new();
+    map.insert(
+        tkn_a.clone(),
+        TokenMetadata {
+            title: tkn_a.clone(),
+            media: "bb".to_string(),
+            media_hash: "cc".to_string(),
+            attributes: "dd".to_string(),
+        },
+    );
+    map.insert(
+        tkn_b.clone(),
+        TokenMetadata {
+            title: tkn_b.clone(),
+            media: "bb".to_string(),
+            media_hash: "cc".to_string(),
+            attributes: "dd".to_string(),
+        },
+    );
+    map.insert(
+        tkn_c.clone(),
+        TokenMetadata {
+            title: tkn_c.clone(),
+            media: "bb".to_string(),
+            media_hash: "cc".to_string(),
+            attributes: "dd".to_string(),
+        },
+    );
+    map.insert(
+        tkn_d.clone(),
+        TokenMetadata {
+            title: tkn_d.clone(),
+            media: "bb".to_string(),
+            media_hash: "cc".to_string(),
+            attributes: "dd".to_string(),
+        },
+    );
+    map.insert(
+        tkn_e.clone(),
+        TokenMetadata {
+            title: tkn_e.clone(),
+            media: "bb".to_string(),
+            media_hash: "cc".to_string(),
+            attributes: "dd".to_string(),
+        },
+    );
+    contract.nft_register(map);
+
+    testing_env!(VMContextBuilder::new()
+        .predecessor_account_id(acc_x.clone())
+        .attached_deposit(1)
+        .is_view(false)
+        .build());
+    contract.nft_set_mint_info(MintInfo {
+        limit: 6,
+        public: 24,
+        listed: 12,
+    });
+
+    testing_env!(VMContextBuilder::new()
+        .predecessor_account_id(acc_x.clone())
+        .attached_deposit(1)
+        .is_view(false)
+        .build());
+    contract.nft_allow_minting(acc_b.clone(), 3);
+
+    testing_env!(VMContextBuilder::new()
+        .predecessor_account_id(acc_a.clone())
+        .is_view(true)
+        .build());
+    let mut state = contract.nft_mint_state(acc_a.clone(), None, None);
+    assert!(state.cost == 24, "unexpected cost");
+    assert!(state.count == 0, "unexpected count");
+    assert!(state.limit == 6, "unexpected limit");
+    assert!(state.tokens.is_empty(), "unexpected tokens");
+
+    state = contract.nft_mint_state(acc_b.clone(), None, None);
+    assert!(state.cost == 12, "unexpected cost");
+    assert!(state.count == 0, "unexpected count");
+    assert!(state.limit == 3, "unexpected limit");
+    assert!(state.tokens.is_empty(), "unexpected tokens");
+
+    testing_env!(VMContextBuilder::new()
+        .predecessor_account_id(acc_a.clone())
+        .attached_deposit(ONE_NEAR * 24)
+        .is_view(false)
+        .build());
+    contract.nft_mint(tkn_a.clone(), acc_a.clone());
+    contract.nft_mint(tkn_b.clone(), acc_a.clone());
+
+    testing_env!(VMContextBuilder::new()
+        .predecessor_account_id(acc_b.clone())
+        .attached_deposit(ONE_NEAR * 12)
+        .is_view(false)
+        .build());
+    contract.nft_mint(tkn_c.clone(), acc_b.clone());
+
+    state = contract.nft_mint_state(acc_a.clone(), None, None);
+    assert!(state.cost == 24, "unexpected cost");
+    assert!(state.count == 2, "unexpected count");
+    assert!(state.limit == 4, "unexpected limit");
+    assert!(state.tokens.len() == 2, "unexpected tokens");
+
+    state = contract.nft_mint_state(acc_b.clone(), None, None);
+    assert!(state.cost == 12, "unexpected cost");
+    assert!(state.count == 1, "unexpected count");
+    assert!(state.limit == 2, "unexpected limit");
+    assert!(state.tokens.len() == 1, "unexpected tokens");
+
+    testing_env!(VMContextBuilder::new()
+        .predecessor_account_id(acc_b.clone())
+        .attached_deposit(ONE_NEAR * 12)
+        .is_view(false)
+        .build());
+    contract.nft_mint(tkn_d.clone(), acc_b.clone());
+    contract.nft_mint(tkn_e.clone(), acc_b.clone());
+
+    state = contract.nft_mint_state(acc_b.clone(), Some(1), None);
+    assert!(state.cost == 12, "unexpected cost");
+    assert!(state.count == 3, "unexpected count");
+    assert!(state.limit == 0, "unexpected limit");
+    assert!(state.tokens.len() == 2, "unexpected tokens");
+}

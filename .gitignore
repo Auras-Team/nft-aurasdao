@@ -38,3 +38,5 @@ yarn-error.log*
 /nft-deploy/images
 /nft-deploy/near_metadata
 /nft-deploy/solana_metadata
+
+*.csv

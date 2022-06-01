@@ -2,9 +2,9 @@ use near_sdk::require;
 
 use crate::*;
 
-/***************/
-/* Pre Minting */
-/***************/
+/***********/
+/* Minting */
+/***********/
 
 #[near_bindgen]
 impl Contract {
@@ -132,9 +132,9 @@ impl Contract {
     }
 }
 
-/******************/
-/* Minting State */
-/******************/
+/****************/
+/* Minting Info */
+/****************/
 
 #[near_bindgen]
 impl Contract {
@@ -191,5 +191,73 @@ impl Contract {
         );
         //remove the account to the minting whitelist
         self.mint_state_list.remove(&account_id);
+    }
+}
+
+/************************/
+/* Minting Enumeration  */
+/************************/
+
+#[near_bindgen]
+impl Contract {
+    pub fn nft_mint_state(
+        &self,
+        account_id: AccountId,
+        from_index: Option<u64>,
+        limit: Option<u64>,
+    ) -> JsonMintState {
+        //needed for prices and to see if public minting is enabled
+        let mint_info = self.mint_info.get().expect("Mint info not found");
+
+        // if public price > get account limit or create
+        // if no public price > get whitelist limit or error
+        let mint_state = match mint_info.public {
+            0 => self.mint_state_list.get(&account_id).unwrap_or(MintState {
+                limit: 0,
+                listed: false,
+            }),
+            _ => self.mint_state_list.get(&account_id).unwrap_or(MintState {
+                limit: mint_info.limit,
+                listed: false,
+            }),
+        };
+
+        //get the set of tokens for the passed in owner
+        let tokens_for_owner_set = self.tokens_per_owner.get(&account_id);
+        //if there is some token info return a state with some token
+        if let Some(tokens) = tokens_for_owner_set {
+            //where to start pagination - if we have a from_index, we'll use that - otherwise start from 0 index
+            let start = u128::from(from_index.unwrap_or(0));
+            //token state with info
+            return JsonMintState {
+                cost: match mint_state.listed {
+                    true => mint_info.listed,
+                    false => mint_info.public,
+                },
+                count: tokens.len(),
+                limit: mint_state.limit,
+                tokens: tokens
+                    .iter()
+                    //skip to the index we specified in the start variable
+                    .skip(start as usize)
+                    //take the first "limit" elements in the vector. If we didn't specify a limit, use 10
+                    .take(limit.unwrap_or(10) as usize)
+                    //we'll map the token IDs which are strings into Json Tokens
+                    .map(|token_id| self.nft_token(token_id.clone()).unwrap())
+                    //since we turned the keys into an iterator, we need to turn it back into a vector to return
+                    .collect(),
+            };
+        }
+
+        //if there is no set of tokens, we'll simply return an empty state.
+        JsonMintState {
+            cost: match mint_state.listed {
+                true => mint_info.listed,
+                false => mint_info.public,
+            },
+            count: 0,
+            limit: mint_state.limit,
+            tokens: Vec::new(),
+        }
     }
 }
