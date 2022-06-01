@@ -131,68 +131,6 @@ impl Contract {
     }
 }
 
-/******************/
-/* Minting State */
-/******************/
-
-#[near_bindgen]
-impl Contract {
-    pub fn nft_mint_info(&self) -> MintInfo {
-        self.mint_info.get().unwrap()
-    }
-
-    #[payable]
-    pub fn nft_set_mint_info(&mut self, info: MintInfo) {
-        //require that the owner attached 1 yoctoNEAR for security reasons
-        require_one_yocto();
-        //require the the sender is the owner of the contract
-        require!(
-            env::predecessor_account_id() == self.owner_id,
-            "Only owner can set mint info",
-        );
-        self.mint_info.set(&info);
-    }
-}
-
-/*********************/
-/* Minting Whitelist */
-/*********************/
-
-#[near_bindgen]
-impl Contract {
-    #[payable]
-    pub fn nft_allow_minting(&mut self, account_id: AccountId, amount: u32) {
-        //require that the owner attached 1 yoctoNEAR for security reasons
-        require_one_yocto();
-        //require the the sender is the owner of the contract
-        require!(
-            env::predecessor_account_id() == self.owner_id,
-            "Only owner can allow minting access",
-        );
-        //insert the account and the limit to the minting whitelist
-        self.mint_state_list.insert(
-            &account_id,
-            &MintState {
-                limit: amount,
-                listed: true,
-            },
-        );
-    }
-
-    #[payable]
-    pub fn nft_revoke_minting(&mut self, account_id: AccountId) {
-        //require that the owner attached 1 yoctoNEAR for security reasons
-        require_one_yocto();
-        //require the the sender is the owner of the contract
-        require!(
-            env::predecessor_account_id() == self.owner_id,
-            "Only owner can revoke minting access",
-        );
-        //remove the account to the minting whitelist
-        self.mint_state_list.remove(&account_id);
-    }
-}
-
 /*******************/
 /* Near Withdrawal */
 /*******************/
