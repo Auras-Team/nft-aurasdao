@@ -8,6 +8,7 @@
         "build": "cd nft-contract && bash build.sh && cd ../.."
     },
     "dependencies": {
-        "sharp": "^0.30.5"
+        "sharp": "^0.30.5",
+        "near-api-js": "github:vecno-io/near-api-js#x0.44.2.1"
     }
 }
