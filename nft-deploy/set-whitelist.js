@@ -1,6 +1,9 @@
 const fs = require('fs');
 const { exec } = require("child_process");
 
+// The contract call to whitelist / allow minting tokens
+// nft_allow_minting(&mut self, account_id: AccountId, amount: u32)
+
 // Listed 120 accounts (4 fails)
 // Pre Used:  300459
 // Pre Cost:  3004590000000000000000000

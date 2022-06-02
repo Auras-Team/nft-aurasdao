@@ -82,13 +82,12 @@ var walk = function (dir, done) {
 	});
 };
 
-// optional command line params
-//      source for walk path
-process.argv.forEach(function (val, index, array) {
-	if (val.indexOf('source') !== -1) {
-		walkPath = val.split('=')[1];
-	}
-});
+// optional command line params, sets source for walk path
+// process.argv.forEach(function (val, index, array) {
+// 	if (val.indexOf('source') !== -1) {
+// 		walkPath = val.split('=')[1];
+// 	}
+// });
 
 console.log('-------------------------------------------------------------');
 console.log('processing...');
@@ -119,7 +118,3 @@ walk(walkPath, function (error) {
 		console.log('-------------------------------------------------------------');
 	}
 });
-
-// let rawdata = fs.readFileSync('student.json');
-// let student = JSON.parse(rawdata);
-// console.log(student);

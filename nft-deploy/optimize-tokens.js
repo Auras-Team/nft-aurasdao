@@ -56,11 +56,12 @@ var walk = function (dir, done) {
 	});
 };
 
-process.argv.forEach(function (val, index, array) {
-	if (val.indexOf('source') !== -1) {
-		walkPath = val.split('=')[1];
-	}
-});
+// optional command line params, sets source for walk path
+// process.argv.forEach(function (val, index, array) {
+// 	if (val.indexOf('source') !== -1) {
+// 		walkPath = val.split('=')[1];
+// 	}
+// });
 
 console.log('-------------------------------------------------------------');
 console.log('processing...');
