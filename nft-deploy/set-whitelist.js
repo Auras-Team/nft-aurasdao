@@ -46,7 +46,7 @@ function nextAccount() {
 }
 
 async function processAccount(account) {
-	if (account.len() <= 5 && "0x" == account.substring(0, 2)) {
+	if (account.length <= 5 && "0x" == account.substring(0, 2)) {
 		console.log(`${idx} => Skiping: ${account}`);
 		nextAccount();
 		return;
