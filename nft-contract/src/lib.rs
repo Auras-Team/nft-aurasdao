@@ -42,11 +42,11 @@ pub struct Contract {
     //cost of minting a token
     pub mint_info: LazyOption<MintInfo>,
 
-    //keeps track of the token struct for a given token ID
-    pub tokens_by_id: LookupMap<TokenId, Token>,
-
     //keep track of accounts and amount that can be minted
     pub mint_state_list: LookupMap<AccountId, MintState>,
+
+    //keeps track of the token struct for a given token ID
+    pub tokens_by_id: UnorderedMap<TokenId, Token>,
 
     //keeps track of the token metadata for a given token ID
     pub token_data_by_id: UnorderedMap<TokenId, TokenMetadata>,
@@ -123,7 +123,7 @@ impl Contract {
                 StorageKey::ContractAllowListMint.try_to_vec().unwrap(),
             ),
 
-            tokens_by_id: LookupMap::new(StorageKey::TokensById.try_to_vec().unwrap()),
+            tokens_by_id: UnorderedMap::new(StorageKey::TokensById.try_to_vec().unwrap()),
             token_data_by_id: UnorderedMap::new(StorageKey::TokenDataById.try_to_vec().unwrap()),
 
             tokens_per_owner: LookupMap::new(StorageKey::TokensPerOwner.try_to_vec().unwrap()),
