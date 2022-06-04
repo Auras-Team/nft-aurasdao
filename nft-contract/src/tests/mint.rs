@@ -24,10 +24,16 @@ fn _mint_token(
     contract.nft_register(map);
     testing_env!(VMContextBuilder::new()
         .predecessor_account_id(creator_id.clone())
+        .attached_deposit(1)
+        .is_view(false)
+        .build());
+    contract.nft_allow_minting(owner_id.clone(), 5);
+    testing_env!(VMContextBuilder::new()
+        .predecessor_account_id(owner_id.clone())
         .attached_deposit(ONE_NEAR * 22)
         .is_view(false)
         .build());
-    contract.nft_mint(token_id.clone(), owner_id.clone());
+    contract.nft_mint();
 }
 
 /*************/
@@ -84,14 +90,14 @@ fn test_nft_mint_panic_list_cost() {
         .attached_deposit(1)
         .is_view(false)
         .build());
-    contract.nft_allow_minting(acc_x.clone(), 1);
+    contract.nft_allow_minting(acc_a.clone(), 1);
 
     testing_env!(VMContextBuilder::new()
-        .predecessor_account_id(acc_x.clone())
+        .predecessor_account_id(acc_a.clone())
         .attached_deposit(ONE_NEAR)
         .is_view(false)
         .build());
-    contract.nft_mint(tkn_a.clone(), acc_a.clone());
+    contract.nft_mint();
 }
 
 #[test]
@@ -133,15 +139,15 @@ fn test_nft_mint_panic_public_cost() {
     });
 
     testing_env!(VMContextBuilder::new()
-        .predecessor_account_id(acc_x.clone())
+        .predecessor_account_id(acc_a.clone())
         .attached_deposit(ONE_NEAR)
         .is_view(false)
         .build());
-    contract.nft_mint(tkn_a.clone(), acc_a.clone());
+    contract.nft_mint();
 }
 
 #[test]
-#[should_panic(expected = "Token id already minted")]
+#[should_panic(expected = "Out of tokens to mint")]
 fn test_nft_mint_panic_token_id() {
     let tkn_a = String::from("token.a");
 
@@ -183,8 +189,8 @@ fn test_nft_mint_panic_token_id() {
         .attached_deposit(ONE_NEAR * 26)
         .is_view(false)
         .build());
-    contract.nft_mint(tkn_a.clone(), acc_a.clone());
-    contract.nft_mint(tkn_a.clone(), acc_a.clone());
+    contract.nft_mint();
+    contract.nft_mint();
 }
 
 #[test]
@@ -226,32 +232,7 @@ fn test_nft_mint_panic_access() {
         .attached_deposit(ONE_NEAR * 22)
         .is_view(false)
         .build());
-    contract.nft_mint(tkn_a.clone(), acc_a.clone());
-}
-
-#[test]
-#[should_panic(expected = "Token id could not be found")]
-fn test_nft_mint_panic_id_not_found() {
-    let tkn_a = String::from("token.a");
-
-    let acc_a = AccountId::new_unchecked(String::from("account.a"));
-    let acc_x = AccountId::new_unchecked(String::from("account.x"));
-
-    let mut contract = Contract::ctrl_init_default(acc_x.clone());
-
-    testing_env!(VMContextBuilder::new()
-        .predecessor_account_id(acc_x.clone())
-        .attached_deposit(1)
-        .is_view(false)
-        .build());
-    contract.nft_allow_minting(acc_a.clone(), 1);
-
-    testing_env!(VMContextBuilder::new()
-        .predecessor_account_id(acc_a.clone())
-        .attached_deposit(ONE_NEAR * 22)
-        .is_view(false)
-        .build());
-    contract.nft_mint(tkn_a.clone(), acc_a.clone());
+    contract.nft_mint();
 }
 
 #[test]
@@ -362,8 +343,8 @@ fn test_nft_mint_panic_amount() {
         .attached_deposit(ONE_NEAR * 22)
         .is_view(false)
         .build());
-    contract.nft_mint(tkn_a.clone(), acc_a.clone());
-    contract.nft_mint(tkn_b.clone(), acc_a.clone());
+    contract.nft_mint();
+    contract.nft_mint();
 }
 
 #[test]
@@ -415,12 +396,12 @@ fn test_nft_mint_panic_mint_limit() {
     });
 
     testing_env!(VMContextBuilder::new()
-        .predecessor_account_id(acc_x.clone())
+        .predecessor_account_id(acc_a.clone())
         .attached_deposit(ONE_NEAR * 30)
         .is_view(false)
         .build());
-    contract.nft_mint(tkn_a.clone(), acc_a.clone());
-    contract.nft_mint(tkn_b.clone(), acc_a.clone());
+    contract.nft_mint();
+    contract.nft_mint();
 }
 
 #[test]
@@ -462,11 +443,11 @@ fn test_nft_mint_panic_mint_disabled() {
     });
 
     testing_env!(VMContextBuilder::new()
-        .predecessor_account_id(acc_x.clone())
+        .predecessor_account_id(acc_a.clone())
         .attached_deposit(ONE_NEAR * 30)
         .is_view(false)
         .build());
-    contract.nft_mint(tkn_a.clone(), acc_a.clone());
+    contract.nft_mint();
 }
 
 /************************/
@@ -579,15 +560,15 @@ fn test_nft_mint_state() {
         .attached_deposit(ONE_NEAR * 24)
         .is_view(false)
         .build());
-    contract.nft_mint(tkn_a.clone(), acc_a.clone());
-    contract.nft_mint(tkn_b.clone(), acc_a.clone());
+    contract.nft_mint();
+    contract.nft_mint();
 
     testing_env!(VMContextBuilder::new()
         .predecessor_account_id(acc_b.clone())
         .attached_deposit(ONE_NEAR * 12)
         .is_view(false)
         .build());
-    contract.nft_mint(tkn_c.clone(), acc_b.clone());
+    contract.nft_mint();
 
     state = contract.nft_mint_state(acc_a.clone(), None, None);
     assert!(state.cost == 24, "unexpected cost");
@@ -606,8 +587,8 @@ fn test_nft_mint_state() {
         .attached_deposit(ONE_NEAR * 12)
         .is_view(false)
         .build());
-    contract.nft_mint(tkn_d.clone(), acc_b.clone());
-    contract.nft_mint(tkn_e.clone(), acc_b.clone());
+    contract.nft_mint();
+    contract.nft_mint();
 
     state = contract.nft_mint_state(acc_b.clone(), Some(1), None);
     assert!(state.cost == 12, "unexpected cost");

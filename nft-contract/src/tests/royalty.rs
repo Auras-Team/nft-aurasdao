@@ -33,14 +33,14 @@ fn test_nft_royalty() {
         .attached_deposit(1)
         .is_view(false)
         .build());
-    contract.nft_allow_minting(acc_x.clone(), 1);
+    contract.nft_allow_minting(acc_a.clone(), 1);
 
     testing_env!(VMContextBuilder::new()
-        .predecessor_account_id(acc_x.clone())
+        .predecessor_account_id(acc_a.clone())
         .attached_deposit(ONE_NEAR * 22)
         .is_view(false)
         .build());
-    contract.nft_mint(tkn_a.clone(), acc_a.clone());
+    contract.nft_mint();
 
     // Check the token info
     testing_env!(VMContextBuilder::new().is_view(true).build());
@@ -127,14 +127,14 @@ fn test_nft_payouts_panic_count() {
         .attached_deposit(1)
         .is_view(false)
         .build());
-    contract.nft_allow_minting(acc_x.clone(), 1);
+    contract.nft_allow_minting(acc_a.clone(), 1);
 
     testing_env!(VMContextBuilder::new()
-        .predecessor_account_id(acc_x.clone())
+        .predecessor_account_id(acc_a.clone())
         .attached_deposit(ONE_NEAR * 22)
         .is_view(false)
         .build());
-    contract.nft_mint(tkn_a.clone(), acc_a.clone());
+    contract.nft_mint();
 
     // Check the token info
     testing_env!(VMContextBuilder::new().is_view(true).build());
@@ -185,7 +185,7 @@ fn test_nft_transfer_payouts_panic_count() {
         .attached_deposit(ONE_NEAR * 22)
         .is_view(false)
         .build());
-    contract.nft_mint(tkn_a.clone(), acc_a.clone());
+    contract.nft_mint();
 
     // Check the token info
     testing_env!(VMContextBuilder::new().is_view(true).build());

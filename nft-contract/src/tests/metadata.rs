@@ -87,14 +87,14 @@ fn test_nft_metadata_token() {
         .attached_deposit(1)
         .is_view(false)
         .build());
-    contract.nft_allow_minting(acc_x.clone(), 1);
+    contract.nft_allow_minting(acc_a.clone(), 1);
 
     testing_env!(VMContextBuilder::new()
-        .predecessor_account_id(acc_x.clone())
+        .predecessor_account_id(acc_a.clone())
         .attached_deposit(ONE_NEAR * 42)
         .is_view(false)
         .build());
-    contract.nft_mint(tkn_a.clone(), acc_a.clone());
+    contract.nft_mint();
 
     testing_env!(VMContextBuilder::new().is_view(true).build());
     let data = contract.nft_token(tkn_a.clone()).expect("nust be set");

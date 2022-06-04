@@ -1,6 +1,6 @@
 'use strict';
 
-const TOKEN_IMG_URL = "cdn.aurasdao.com/tokens/v1/base"
+const TOKEN_IMG_URL = "https://cdn.aurasdao.com/tokens/v1/base"
 
 const fs = require('fs');
 const path = require('path');

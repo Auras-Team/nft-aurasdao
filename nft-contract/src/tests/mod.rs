@@ -17,7 +17,6 @@ fn test_nft_approval_allow_access() {
     let tkn_a = String::from("token.a");
 
     let acc_a = AccountId::new_unchecked(String::from("account.a"));
-    let acc_b = AccountId::new_unchecked(String::from("account.b"));
     let acc_x = AccountId::new_unchecked(String::from("account.x"));
 
     let mut contract = Contract::ctrl_init_default(acc_x.clone());
@@ -53,11 +52,11 @@ fn test_nft_approval_allow_access() {
         .attached_deposit(ONE_NEAR * 22)
         .is_view(false)
         .build());
-    contract.nft_mint(tkn_a.clone(), acc_b.clone());
+    contract.nft_mint();
 
     testing_env!(VMContextBuilder::new().is_view(true).build());
     let token = contract.nft_token(tkn_a.clone()).expect("must be set");
-    assert!(token.owner_id == acc_b);
+    assert!(token.owner_id == acc_a);
 }
 
 /***************/
@@ -260,14 +259,14 @@ fn test_nft_transfer_panic_owner() {
         .attached_deposit(1)
         .is_view(false)
         .build());
-    contract.nft_allow_minting(acc_x.clone(), 1);
+    contract.nft_allow_minting(acc_a.clone(), 1);
 
     testing_env!(VMContextBuilder::new()
-        .predecessor_account_id(acc_x.clone())
+        .predecessor_account_id(acc_a.clone())
         .attached_deposit(ONE_NEAR * 22)
         .is_view(false)
         .build());
-    contract.nft_mint(tkn_a.clone(), acc_a.clone());
+    contract.nft_mint();
 
     testing_env!(VMContextBuilder::new().is_view(true).build());
     let token = contract.nft_token(tkn_a.clone()).expect("must be set");

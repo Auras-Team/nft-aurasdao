@@ -27,10 +27,17 @@ fn _mint_token(
 
     testing_env!(VMContextBuilder::new()
         .predecessor_account_id(creator_id.clone())
+        .attached_deposit(1)
+        .is_view(false)
+        .build());
+    contract.nft_allow_minting(owner_id.clone(), 1);
+
+    testing_env!(VMContextBuilder::new()
+        .predecessor_account_id(owner_id.clone())
         .attached_deposit(ONE_NEAR * 22)
         .is_view(false)
         .build());
-    contract.nft_mint(token_id.clone(), owner_id.clone());
+    contract.nft_mint();
 }
 
 #[test]

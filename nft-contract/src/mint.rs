@@ -37,12 +37,9 @@ impl Contract {
         //refund any excess storage if the owner attached too much. Panic when short.
         refund_deposit(env::storage_usage() - initial_storage_usage);
     }
-}
 
-#[near_bindgen]
-impl Contract {
     #[payable]
-    pub fn nft_mint(&mut self, token_id: TokenId, receiver_id: AccountId) {
+    pub fn nft_mint(&mut self) -> JsonMintState {
         //storage so we need at least one yocto
         require_at_least_one_yocto();
 
@@ -79,15 +76,23 @@ impl Contract {
             ),
         }
 
-        // Verify pre-mint registration of token id
         require!(
-            self.token_data_by_id.get(&token_id).is_some(),
-            "Token id could not be found"
+            self.tokens_by_id.len() < self.token_data_by_id.len(),
+            "Out of tokens to mint"
         );
+
+        let list: Vec<String> = self
+            .token_data_by_id
+            .keys()
+            .skip(self.tokens_by_id.len() as usize)
+            .take(1)
+            .collect();
+
+        let token_id = list.get(0).expect("Unable to find token data");
 
         //specify the token struct that contains the owner ID
         let token = Token {
-            owner_id: receiver_id,
+            owner_id: sender_id.clone(),
             approved_account_ids: Default::default(),
             next_approval_id: 0,
             issued_at: env::block_timestamp(),
@@ -129,6 +134,30 @@ impl Contract {
                 listed: mint_state.listed,
             },
         );
+
+        let tokens = self
+            .tokens_per_owner
+            .get(&sender_id)
+            .expect("Token lsit not found");
+
+        JsonMintState {
+            cost: match mint_state.listed {
+                true => mint_info.listed,
+                false => mint_info.public,
+            },
+            count: tokens.len(),
+            limit: mint_state.limit,
+            tokens: tokens
+                .iter()
+                //skip to the index we specified in the start variable
+                .skip(0 as usize)
+                //take the first "limit" elements in the vector. If we didn't specify a limit, use 10
+                .take(10 as usize)
+                //we'll map the token IDs which are strings into Json Tokens
+                .map(|token_id| self.nft_token(token_id.clone()).unwrap())
+                //since we turned the keys into an iterator, we need to turn it back into a vector to return
+                .collect(),
+        }
     }
 }
 

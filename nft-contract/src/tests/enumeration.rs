@@ -3,18 +3,22 @@ use super::*;
 use crate::enumeration::NftEnumeration;
 use crate::enumeration::NftMintEnumeration;
 
-fn _mint_token(
-    contract: &mut Contract,
-    token_id: String,
-    owner_id: AccountId,
-    creator_id: AccountId,
-) {
+fn _mint_token(contract: &mut Contract, owner_id: AccountId) {
     testing_env!(VMContextBuilder::new()
-        .predecessor_account_id(creator_id.clone())
+        .predecessor_account_id(owner_id.clone())
         .attached_deposit(ONE_NEAR * 22)
         .is_view(false)
         .build());
-    contract.nft_mint(token_id.clone(), owner_id.clone());
+    contract.nft_mint();
+}
+
+fn _mint_approve(contract: &mut Contract, owner_id: AccountId, creator_id: AccountId) {
+    testing_env!(VMContextBuilder::new()
+        .predecessor_account_id(owner_id.clone())
+        .attached_deposit(1)
+        .is_view(false)
+        .build());
+    contract.nft_allow_minting(creator_id, 5);
 }
 
 fn _register_token(contract: &mut Contract, token_id: String, creator_id: AccountId) {
@@ -51,6 +55,10 @@ fn test_nft_enumeration() {
 
     let mut contract = Contract::ctrl_init_default(acc_x.clone());
 
+    _mint_approve(&mut contract, acc_x.clone(), acc_a.clone());
+    _mint_approve(&mut contract, acc_x.clone(), acc_b.clone());
+    _mint_approve(&mut contract, acc_x.clone(), acc_c.clone());
+
     testing_env!(VMContextBuilder::new()
         .predecessor_account_id(acc_x.clone())
         .attached_deposit(1)
@@ -67,8 +75,8 @@ fn test_nft_enumeration() {
     assert!(contract.nft_registered(None, None).len() == 2);
     assert!(contract.nft_registered_supply() == U128::from(2));
 
-    _mint_token(&mut contract, tkn_a.clone(), acc_a.clone(), acc_x.clone());
-    _mint_token(&mut contract, tkn_b.clone(), acc_b.clone(), acc_x.clone());
+    _mint_token(&mut contract, acc_a.clone());
+    _mint_token(&mut contract, acc_b.clone());
 
     testing_env!(VMContextBuilder::new().is_view(true).build());
     assert!(contract.nft_tokens(None, None).len() == 2);
@@ -92,9 +100,9 @@ fn test_nft_enumeration() {
     assert!(contract.nft_supply_for_owner(acc_b.clone()) == U128::from(1));
     assert!(contract.nft_supply_for_owner(acc_c.clone()) == U128::from(0));
 
-    _mint_token(&mut contract, tkn_c.clone(), acc_a.clone(), acc_x.clone());
-    _mint_token(&mut contract, tkn_d.clone(), acc_b.clone(), acc_x.clone());
-    _mint_token(&mut contract, tkn_e.clone(), acc_b.clone(), acc_x.clone());
+    _mint_token(&mut contract, acc_a.clone());
+    _mint_token(&mut contract, acc_b.clone());
+    _mint_token(&mut contract, acc_b.clone());
 
     testing_env!(VMContextBuilder::new().is_view(true).build());
     assert!(contract.nft_tokens(None, None).len() == 5);
