@@ -1,5 +1,5 @@
 use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
-use near_sdk::collections::{LazyOption, LookupMap, UnorderedMap, UnorderedSet};
+use near_sdk::collections::{LazyOption, UnorderedMap, UnorderedSet};
 use near_sdk::json_types::U128;
 use near_sdk::serde::{Deserialize, Serialize};
 use near_sdk::{
@@ -43,16 +43,16 @@ pub struct Contract {
     pub mint_info: LazyOption<MintInfo>,
 
     //keep track of accounts and amount that can be minted
-    pub mint_state_list: LookupMap<AccountId, MintState>,
+    pub mint_state_list: UnorderedMap<AccountId, MintState>,
 
     //keeps track of the token struct for a given token ID
     pub tokens_by_id: UnorderedMap<TokenId, Token>,
 
     //keeps track of the token metadata for a given token ID
-    pub token_data_by_id: UnorderedMap<TokenId, TokenMetadata>,
+    pub meta_data_by_id: UnorderedMap<TokenId, TokenMetadata>,
 
     //keeps track of all the token IDs for a given account
-    pub tokens_per_owner: LookupMap<AccountId, UnorderedSet<TokenId>>,
+    pub tokens_per_owner: UnorderedMap<AccountId, UnorderedSet<TokenId>>,
 }
 
 /// Helper structure for keys of the persistent collections.
@@ -60,10 +60,10 @@ pub struct Contract {
 pub enum StorageKey {
     ContractMetadata,
     ContractMintState,
-    ContractAllowListMint,
+    MintStateList,
 
     TokensById,
-    TokenDataById,
+    MetaDataById,
 
     TokensPerOwner,
     TokenPerOwnerInner { account_id_hash: CryptoHash },
@@ -118,15 +118,12 @@ impl Contract {
                 StorageKey::ContractMintState.try_to_vec().unwrap(),
                 Some(&info),
             ),
-            //Storage keys are simply the prefixes used for storage to avoid data collision.
-            mint_state_list: LookupMap::new(
-                StorageKey::ContractAllowListMint.try_to_vec().unwrap(),
-            ),
 
             tokens_by_id: UnorderedMap::new(StorageKey::TokensById.try_to_vec().unwrap()),
-            token_data_by_id: UnorderedMap::new(StorageKey::TokenDataById.try_to_vec().unwrap()),
+            tokens_per_owner: UnorderedMap::new(StorageKey::TokensPerOwner.try_to_vec().unwrap()),
 
-            tokens_per_owner: LookupMap::new(StorageKey::TokensPerOwner.try_to_vec().unwrap()),
+            meta_data_by_id: UnorderedMap::new(StorageKey::MetaDataById.try_to_vec().unwrap()),
+            mint_state_list: UnorderedMap::new(StorageKey::MintStateList.try_to_vec().unwrap()),
         }
     }
 }
@@ -161,6 +158,47 @@ impl Contract {
         Promise::new(env::predecessor_account_id()).transfer(u128::from(amount));
     }
 }
+
+/*******************************/
+/* Danger Contract Destruction */
+/*             ====            */
+/*   only use for development  */
+/*******************************/
+
+// #[near_bindgen]
+// impl Contract {
+//     pub fn dev_clear_tokens(&mut self) {
+//         let list: Vec<String> = self.meta_data_by_id.keys().take(10).collect();
+//         require!(list.len() > 0, "all tokens have been removed");
+
+//         for key in list {
+//             if let Some(token) = self.tokens_by_id.get(&key.clone()) {
+//                 self.mint_state_list.remove(&token.owner_id);
+//                 self.tokens_per_owner.remove(&token.owner_id);
+//             }
+//             self.tokens_by_id.remove(&key.clone());
+//             self.meta_data_by_id.remove(&key.clone());
+//         }
+//     }
+
+//     pub fn dev_clear_owners(&mut self) {
+//         let list: Vec<AccountId> = self.tokens_per_owner.keys().take(50).collect();
+//         require!(list.len() > 0, "all owners have been removed");
+
+//         for key in list {
+//             self.tokens_per_owner.remove(&key);
+//         }
+//     }
+
+//     pub fn dev_clear_mint_state(&mut self) {
+//         let list: Vec<AccountId> = self.mint_state_list.keys().take(50).collect();
+//         require!(list.len() > 0, "all mint info has been removed");
+
+//         for key in list {
+//             self.mint_state_list.remove(&key);
+//         }
+//     }
+// }
 
 /*****************/
 /* Unit Testing  */

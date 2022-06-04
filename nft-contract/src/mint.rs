@@ -20,7 +20,7 @@ impl Contract {
         );
         //enforce the token supply cap
         require!(
-            token_list.len() + (self.token_data_by_id.len() as usize) <= 1000,
+            token_list.len() + (self.meta_data_by_id.len() as usize) <= 1000,
             "Max supply of 1000 tokens reached",
         );
 
@@ -29,7 +29,7 @@ impl Contract {
 
         for (token_id, metadata) in &token_list {
             require!(
-                self.token_data_by_id.insert(token_id, &metadata).is_none(),
+                self.meta_data_by_id.insert(token_id, &metadata).is_none(),
                 "Token id is already registered"
             );
         }
@@ -77,12 +77,12 @@ impl Contract {
         }
 
         require!(
-            self.tokens_by_id.len() < self.token_data_by_id.len(),
+            self.tokens_by_id.len() < self.meta_data_by_id.len(),
             "Out of tokens to mint"
         );
 
         let list: Vec<String> = self
-            .token_data_by_id
+            .meta_data_by_id
             .keys()
             .skip(self.tokens_by_id.len() as usize)
             .take(1)
@@ -138,7 +138,7 @@ impl Contract {
         let tokens = self
             .tokens_per_owner
             .get(&sender_id)
-            .expect("Token lsit not found");
+            .expect("Token list not found");
 
         JsonMintState {
             cost: match mint_state.listed {

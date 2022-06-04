@@ -198,7 +198,7 @@ impl NonFungibleTokenCore for Contract {
         if let Some(token) = self.tokens_by_id.get(&token_id) {
             //we'll get the data and meta for that token
             let metadata = self
-                .token_data_by_id
+                .meta_data_by_id
                 .get(&token_id)
                 .expect("metadata not found");
 

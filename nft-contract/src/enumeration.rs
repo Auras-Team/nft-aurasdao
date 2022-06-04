@@ -107,7 +107,7 @@ impl NftMintEnumeration for Contract {
     //get the registered supply of NFTs on the contract
     fn nft_registered_supply(&self) -> U128 {
         //return the length of the token metadata by ID
-        U128(self.token_data_by_id.len() as u128)
+        U128(self.meta_data_by_id.len() as u128)
     }
 
     //get the registered nft tokens for the contract
@@ -121,7 +121,7 @@ impl NftMintEnumeration for Contract {
 
         //select the range of token keys using an iterator
         let list = self
-            .token_data_by_id
+            .meta_data_by_id
             .keys()
             //skip to the index we specified in the start variable
             .skip(start as usize)
@@ -131,10 +131,7 @@ impl NftMintEnumeration for Contract {
         let mut map = HashMap::new();
 
         for key in list {
-            map.insert(
-                key.clone(),
-                self.token_data_by_id.get(&key.clone()).unwrap(),
-            );
+            map.insert(key.clone(), self.meta_data_by_id.get(&key.clone()).unwrap());
         }
         map
     }
